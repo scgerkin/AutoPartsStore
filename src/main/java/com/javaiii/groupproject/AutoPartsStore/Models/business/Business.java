@@ -1,7 +1,7 @@
-package com.javaiii.groupproject.AutoPartsStore.models.business;
+package com.javaiii.groupproject.AutoPartsStore.Models.business;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseWriteable;
-import com.javaiii.groupproject.AutoPartsStore.models.address.Address;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

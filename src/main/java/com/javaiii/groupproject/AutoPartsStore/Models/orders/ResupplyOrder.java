@@ -1,12 +1,11 @@
-package com.javaiii.groupproject.AutoPartsStore.models.orders;
+package com.javaiii.groupproject.AutoPartsStore.Models.orders;
 
-import com.javaiii.groupproject.AutoPartsStore.models.people.Employee;
-import com.javaiii.groupproject.AutoPartsStore.models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
+import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * ResupplyOrder is an order created by an Employee to restock inventory in the

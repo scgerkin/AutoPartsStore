@@ -1,8 +1,8 @@
-package com.javaiii.groupproject.AutoPartsStore.models.people;
+package com.javaiii.groupproject.AutoPartsStore.Models.people;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseWriteable;
-import com.javaiii.groupproject.AutoPartsStore.models.address.Address;
-import com.javaiii.groupproject.AutoPartsStore.models.orders.Order;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.Order;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

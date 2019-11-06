@@ -1,7 +1,7 @@
-package com.javaiii.groupproject.AutoPartsStore.models.address;
+package com.javaiii.groupproject.AutoPartsStore.Models.address;
 
 
-import com.javaiii.groupproject.AutoPartsStore.models.people.Customer;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Customer;
 
 import java.util.Objects;
 

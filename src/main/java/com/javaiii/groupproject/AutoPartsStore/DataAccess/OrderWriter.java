@@ -1,10 +1,10 @@
 package com.javaiii.groupproject.AutoPartsStore.DataAccess;
 
-import com.javaiii.groupproject.AutoPartsStore.models.orders.CustomerOrder;
-import com.javaiii.groupproject.AutoPartsStore.models.orders.Order;
-import com.javaiii.groupproject.AutoPartsStore.models.orders.ResupplyOrder;
-import com.javaiii.groupproject.AutoPartsStore.models.people.Employee;
-import com.javaiii.groupproject.AutoPartsStore.models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.CustomerOrder;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.Order;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
+import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 
 import java.math.BigDecimal;
 import java.sql.*;

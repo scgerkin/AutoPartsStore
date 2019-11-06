@@ -1,4 +1,4 @@
-package com.javaiii.groupproject.AutoPartsStore.models.products;
+package com.javaiii.groupproject.AutoPartsStore.Models.products;
 
 import java.util.Objects;
 

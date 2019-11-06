@@ -1,10 +1,10 @@
-package com.javaiii.groupproject.AutoPartsStore.models.orders;
+package com.javaiii.groupproject.AutoPartsStore.Models.orders;
 
 
 
 import com.javaiii.groupproject.AutoPartsStore.exceptions.EmptyOrderException;
-import com.javaiii.groupproject.AutoPartsStore.models.people.Person;
-import com.javaiii.groupproject.AutoPartsStore.models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Person;
+import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 
 import java.math.BigDecimal;
 

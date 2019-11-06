@@ -1,4 +1,4 @@
-package com.javaiii.groupproject.AutoPartsStore.models.address;
+package com.javaiii.groupproject.AutoPartsStore.Models.address;
 
 import java.util.Arrays;
 import java.util.Objects;

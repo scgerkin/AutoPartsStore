@@ -2,16 +2,16 @@ package com.javaiii.groupproject.AutoPartsStore.DataAccess.test;
 
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
-import com.javaiii.groupproject.AutoPartsStore.models.address.Address;
-import com.javaiii.groupproject.AutoPartsStore.models.business.ShippingProvider;
-import com.javaiii.groupproject.AutoPartsStore.models.business.Supplier;
-import com.javaiii.groupproject.AutoPartsStore.models.orders.CustomerOrder;
-import com.javaiii.groupproject.AutoPartsStore.models.orders.Order;
-import com.javaiii.groupproject.AutoPartsStore.models.orders.ResupplyOrder;
-import com.javaiii.groupproject.AutoPartsStore.models.people.Customer;
-import com.javaiii.groupproject.AutoPartsStore.models.people.Employee;
-import com.javaiii.groupproject.AutoPartsStore.models.products.Car;
-import com.javaiii.groupproject.AutoPartsStore.models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
+import com.javaiii.groupproject.AutoPartsStore.Models.business.ShippingProvider;
+import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.CustomerOrder;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.Order;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Customer;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
+import com.javaiii.groupproject.AutoPartsStore.Models.products.Car;
+import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 
 import java.io.IOException;
 import java.math.BigDecimal;

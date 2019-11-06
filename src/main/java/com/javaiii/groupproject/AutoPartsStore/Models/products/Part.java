@@ -1,8 +1,8 @@
-package com.javaiii.groupproject.AutoPartsStore.models.products;
+package com.javaiii.groupproject.AutoPartsStore.Models.products;
 
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseWriteable;
-import com.javaiii.groupproject.AutoPartsStore.models.business.Business;
+import com.javaiii.groupproject.AutoPartsStore.Models.business.Business;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

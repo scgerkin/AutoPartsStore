@@ -1,6 +1,6 @@
-package com.javaiii.groupproject.AutoPartsStore.models.business;
+package com.javaiii.groupproject.AutoPartsStore.Models.business;
 
-import com.javaiii.groupproject.AutoPartsStore.models.address.Address;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,13 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * ShippingProvider encapsulates a Business that provides shipping services for
+ * Supplier encapsulates a Business that provides shipping services for
  * our products.
  *
  * All objects should be instantiated using the static factory methods provided
  * (createNew and createExisting).
  */
-public class ShippingProvider extends Business {
+public class Supplier extends Business {
 
     /**
      * Private constructor.
@@ -36,9 +36,9 @@ public class ShippingProvider extends Business {
      *                address information.
      * @param notes Any notes that need to be recorded regarding the Business.
      */
-    private ShippingProvider(Integer businessID, String companyName, String contactName,
-                             String primaryPhone, String secondaryPhone, String website,
-                             Address address, String notes) {
+    private Supplier(Integer businessID, String companyName, String contactName,
+                     String primaryPhone, String secondaryPhone, String website,
+                     Address address, String notes) {
         super(businessID, companyName, contactName, primaryPhone, secondaryPhone,
             website, address, notes);
     }
@@ -58,7 +58,7 @@ public class ShippingProvider extends Business {
      *                address information.
      * @return a new Business object with empty fields to be saved to the database.
      */
-    public static ShippingProvider createNew(String companyName, String primaryPhone,
+    public static Supplier createNew(String companyName, String primaryPhone,
                                              Address address) {
         return createNew(companyName, "",
             primaryPhone, "", "", address, "");
@@ -80,10 +80,10 @@ public class ShippingProvider extends Business {
      * @param notes Any notes that need to be recorded regarding the Business.
      * @return a new Business object to be saved to the database.
      */
-    public static ShippingProvider createNew(String companyName, String contactName,
+    public static Supplier createNew(String companyName, String contactName,
                                              String primaryPhone, String secondaryPhone,
                                              String website, Address address, String notes) {
-        return new ShippingProvider(-1, companyName, contactName, primaryPhone,
+        return new Supplier(-1, companyName, contactName, primaryPhone,
             secondaryPhone, website, address, notes);
     }
 
@@ -106,19 +106,19 @@ public class ShippingProvider extends Business {
      * @param notes Any notes that need to be recorded regarding the Business.
      * @return an existing Business from established data (typically the database).
      */
-    public static ShippingProvider createExisting(Integer businessID, String companyName,
-                                          String contactName, String primaryPhone,
-                                          String secondaryPhone, String website,
-                                          Address address, String notes) {
-        return new ShippingProvider(businessID, companyName, contactName, primaryPhone,
+    public static Supplier createExisting(Integer businessID, String companyName,
+                                                  String contactName, String primaryPhone,
+                                                  String secondaryPhone, String website,
+                                                  Address address, String notes) {
+        return new Supplier(businessID, companyName, contactName, primaryPhone,
             secondaryPhone, website, address, notes);
     }
 
     /**
      * Creates a PreparedStatement for use by the DatabaseManager for adding
-     * or updating Shipper records.
+     * or updating Supplier records.
      * @param connection The database connection.
-     * @return A PreparedStatement object with Shipper information and a protocol.
+     * @return A PreparedStatement object with Supplier information and a protocol.
      * @throws SQLException If there is a problem creating the statement.
      */
     @Override
@@ -132,14 +132,14 @@ public class ShippingProvider extends Business {
     }
 
     /**
-     * Creates an insert statement new existing Shipper information to be added
+     * Creates an insert statement new existing Supplier information to be added
      * to the database.
      * @param connection The database connection.
-     * @return An insert PreparedStatement with Shipper information.
+     * @return An insert PreparedStatement with Supplier information.
      * @throws SQLException If there is a problem creating the statement.
      */
     private PreparedStatement insert(Connection connection) throws SQLException {
-        String sql = "INSERT INTO AutoPartsStore.Shippers (Company, ContactName," +
+        String sql = "INSERT INTO AutoPartsStore.Suppliers (Company, ContactName," +
                          " PrimaryPhone, SecondaryPhone, Website, Address, City," +
                          " State, ZipCode, Notes)" +
                          " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -149,14 +149,14 @@ public class ShippingProvider extends Business {
     }
 
     /**
-     * Creates an update statement for existing Shipper information to be updated
+     * Creates an update statement for existing Supplier information to be updated
      * in the database.
      * @param connection The database connection.
-     * @return An update PreparedStatement with Shipper information.
+     * @return An update PreparedStatement with Supplier information.
      * @throws SQLException If there is a problem creating the statement.
      */
     private PreparedStatement update(Connection connection) throws SQLException {
-        String sql = "UPDATE AutoPartsStore.Shippers" +
+        String sql = "UPDATE AutoPartsStore.Suppliers" +
                          " SET Company = ?, ContactName = ?, PrimaryPhone = ?," +
                          " SecondaryPhone = ?, Website = ?, Address = ?, City = ?," +
                          " State = ?, ZipCode = ?, Notes = ?" +

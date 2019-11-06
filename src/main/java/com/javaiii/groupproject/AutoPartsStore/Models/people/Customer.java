@@ -1,6 +1,6 @@
-package com.javaiii.groupproject.AutoPartsStore.models.people;
+package com.javaiii.groupproject.AutoPartsStore.Models.people;
 
-import com.javaiii.groupproject.AutoPartsStore.models.address.Address;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

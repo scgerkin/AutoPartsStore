@@ -1,9 +1,9 @@
-package com.javaiii.groupproject.AutoPartsStore.models.orders;
+package com.javaiii.groupproject.AutoPartsStore.Models.orders;
 
-import com.javaiii.groupproject.AutoPartsStore.models.address.ShippingAddress;
-import com.javaiii.groupproject.AutoPartsStore.models.business.ShippingProvider;
-import com.javaiii.groupproject.AutoPartsStore.models.people.Customer;
-import com.javaiii.groupproject.AutoPartsStore.models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.ShippingAddress;
+import com.javaiii.groupproject.AutoPartsStore.Models.business.ShippingProvider;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Customer;
+import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 
 import java.math.BigDecimal;
 import java.util.Date;
