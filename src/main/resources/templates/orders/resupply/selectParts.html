@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Resupply Order</title>
+</head>
+<body>
+    <h1>Select the parts to order</h1>
+    <div th:if="${partsFilteredBySupplier}">
+        <table>
+            <tr>
+                <th>Part ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Supplier</th>
+                <th>Unit Price</th>
+                <th>Quantity in Stock</th>
+            </tr>
+            <tr th:each="part : ${partsFilteredBySupplier}">
+                <td th:text="${part.partID}">ID</td>
+                <td th:text="${part.name}">Name</td>
+                <td th:text="${part.category}">Category</td>
+                <td th:text="${part.description}">Description</td>
+                <td th:text="${part.supplier.companyName}">Supplier</td>
+                <td th:text="${part.pricePerUnit}">Unit Price</td>
+                <td th:text="${part.quantityOnHand}">Quantity in Stock</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

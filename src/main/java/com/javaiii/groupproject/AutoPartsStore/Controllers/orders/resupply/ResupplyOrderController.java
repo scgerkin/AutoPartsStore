@@ -4,12 +4,17 @@ import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
 import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
-import com.javaiii.groupproject.AutoPartsStore.command.SelectVendorCommand;
+import com.javaiii.groupproject.AutoPartsStore.command.ResupplyOrderCommand;
+import com.javaiii.groupproject.AutoPartsStore.command.SupplierCommand;
+import com.javaiii.groupproject.AutoPartsStore.exceptions.EmptyListException;
 import com.javaiii.groupproject.AutoPartsStore.exceptions.PersonNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -22,6 +27,10 @@ import java.util.Map;
 public class ResupplyOrderController {
 
     DatabaseManager db;
+
+    private List<Part> activeParts = new ArrayList<>();
+    private List<String> availableSuppliers = new ArrayList<>();
+    private List<Part> partsFilteredBySupplier = new ArrayList<>();
 
     // Constants for tax and shipping rates
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
@@ -39,56 +48,111 @@ public class ResupplyOrderController {
     private String link;
 
     // Property variables
-    private List<Part> parts = new ArrayList<>();
     private List<Part> partsSelectedByVendor = new ArrayList<>();
-    private List<String> vendorNames = new ArrayList<>();
     private String errorMsg;
     private String orderEmployeeEmail;
     private String orderNotes;
     private String selectedVendor;
 
+    /**Default constructor connects to the database only*/
+    public ResupplyOrderController() {
+        connect();
+    }
+
+    /**Initializes a connection to the database*/
+    private void connect() {
+        db = new DatabaseManager(true);
+    }
+
+    /**For setting the Command object we will use for resupply orders*/
     @RequestMapping("/orders/resupply/startResupplyOrder")
-    public String resupplyOrder(Model model) {
-        model.addAttribute("command", new SelectVendorCommand());
+    public String startResupplyOrder(Model model) {
+        model.addAttribute("command", new SupplierCommand());
         return "orders/resupply/startResupplyOrder";
     }
 
-    @ModelAttribute("getListOfVendors")
-    public List<String> getListOfVendors() {
-        init();
-        return vendorNames;
+    /**For getting the list of available Vendors based on active Parts*/
+    @ModelAttribute("getListOfSuppliers")
+    public List<String> getListOfSuppliers() {
+        buildSupplierList();
+        return availableSuppliers;
     }
 
-    public ResupplyOrderController() {
-        init();
+    @ModelAttribute("getListOfActiveParts")
+    public List<Part> getListOfActiveParts() {
+        buildPartList();
+        return activeParts;
     }
 
-    private void init() {
-        errorMsg = "";
-        orderNotes = "";
+    /**For handling user selection of Supplier*/
+    @PostMapping("/orders/resupply/startResupplyOrder")
+    public String supplierPost(@ModelAttribute("command") SupplierCommand command,
+                               BindingResult bindingResult, // MUST follow command
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+        System.out.println("Supplier Selection Submission");
+        if (bindingResult.hasErrors()) {
+            System.out.println("Binding Result has errors");
+            return "orders/resupply/startResupplyOrder";
+        }
+        // build the list of available parts based on the selected vendor
+        String selectedSupplier = command.getSelectedSupplier();
+        partsFilteredBySupplier = getPartsBySupplier(selectedSupplier);
+        model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
+        redirectAttributes.addFlashAttribute("command", command);
+        redirectAttributes.addFlashAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
+        return "redirect:/orders/resupply/selectParts";
+    }
 
+//    @ModelAttribute("getPartsFilteredBySupplier")
+//    public List<Part> getPartsFilteredBySupplier() {
+//        return partsFilteredBySupplier;
+//    }
+
+    @RequestMapping("orders/resupply/selectParts")
+    public String selectParts(Model model) {
+        model.addAttribute("command", new ResupplyOrderCommand());
+        return "orders/resupply/selectParts";
+    }
+
+    /**For building the list of currently not discontinued Parts*/
+    private void buildPartList() {
+        connect();
         try {
-            connect();
-            parts = db.getAllActiveParts();
+            activeParts = db.getAllActiveParts();
         }
-        catch (SQLException ex){
-            errorMsg = getExceptionMsg(ex);
-        }
-
-        for (Part value : parts) {
-            if (!vendorNames.contains(value.getSupplier().getCompanyName()))
-                vendorNames.add(value.getSupplier().getCompanyName());
-        }
-
-        for (Part part : parts) {
-            if (!vendorNames.contains(part.getSupplier().getCompanyName()) &&
-                    !part.getSupplier().getCompanyName().equals("Auto Parts Store"))
-                vendorNames.add(part.getSupplier().getCompanyName());
+        catch (SQLException ex) {
+            ex.printStackTrace();
         }
     }
 
-    private void connect() {
-        db = new DatabaseManager(true);
+    /**For building the list of available vendors based on available Parts*/
+    private void buildSupplierList() {
+        buildPartList();
+        if (activeParts.isEmpty()) {
+            throw new EmptyListException(
+                "Parts List Empty when attempting to retrieve list of Vendors."
+            );
+        }
+        for (Part part : activeParts) {
+            String vendorName = part.getSupplier().getCompanyName();
+            if (!availableSuppliers.contains(vendorName)) {
+                availableSuppliers.add(vendorName);
+            }
+        }
+    }
+
+    /**Creates a list of Parts filtered by Supplier*/
+    private List<Part> getPartsBySupplier(String selectedSupplier) {
+        List<Part> parts = new ArrayList<>();
+        // add parts by supplier to the list
+        for (Part part : activeParts) {
+            String partSupplier = part.getSupplier().getCompanyName();
+            if (partSupplier.equals(selectedSupplier)) {
+                parts.add(part);
+            }
+        }
+        return parts;
     }
 
     /**
@@ -97,7 +161,7 @@ public class ResupplyOrderController {
      */
     public String loadParts() {
 
-        for (Part part : parts) {
+        for (Part part : activeParts) {
             if (part.getSupplier().getCompanyName().equals(selectedVendor)) {
                 partsSelectedByVendor.add(part);
                 listedParts.put(part, 0);
@@ -338,12 +402,12 @@ public class ResupplyOrderController {
         this.link = link;
     }
 
-    public List<Part> getParts() {
-        return parts;
+    public List<Part> getActiveParts() {
+        return activeParts;
     }
 
-    public void setParts(List<Part> parts) {
-        this.parts = parts;
+    public void setActiveParts(List<Part> activeParts) {
+        this.activeParts = activeParts;
     }
 
     public List<Part> getPartsSelectedByVendor() {
@@ -354,12 +418,12 @@ public class ResupplyOrderController {
         this.partsSelectedByVendor = partsSelectedByVendor;
     }
 
-    public List<String> getVendorNames() {
-        return vendorNames;
+    public List<String> getAvailableSuppliers() {
+        return availableSuppliers;
     }
 
-    public void setVendorNames(List<String> vendorNames) {
-        this.vendorNames = vendorNames;
+    public void setAvailableSuppliers(List<String> availableSuppliers) {
+        this.availableSuppliers = availableSuppliers;
     }
 
     public String getErrorMsg() {

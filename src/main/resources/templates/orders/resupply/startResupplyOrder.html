@@ -8,10 +8,10 @@
     <h1>Select a Vendor to Begin Order</h1>
     <form action="#" th:action="@{/orders/resupply/startResupplyOrder}" th:object="${command}" method="post">
         <p>Select Vendor:</p>
-        <select th:field="*{selectedVendor}">
-            <option th:each="vendor: ${getListOfVendors}"
-                    th:value="${vendor}"
-                    th:text="${vendor}" ></option>
+        <select th:field="*{selectedSupplier}">
+            <option th:each="supplier : ${getListOfSuppliers}"
+                    th:value="${supplier}"
+                    th:text="${supplier}" ></option>
         </select>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /> </p>
     </form>
