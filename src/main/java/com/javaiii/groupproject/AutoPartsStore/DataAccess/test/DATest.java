@@ -31,7 +31,7 @@ public class DATest {
     public static Address testAddress;
 
     public static void main(String[] args) throws Exception {
-        db = new DatabaseManager(true);
+        db = new DatabaseManager(false);
         testAddress = new Address("123 test", "TestCity", "GA", "99999");
         System.out.println("MAKE SURE DATABASE HAS BEEN CLEANED" +
                                " AND RESET BEFORE RUNNING TESTS OR THEY WILL ALWAYS FAIL!");
@@ -874,8 +874,7 @@ public class DATest {
                 "DESCRIPTION",
                 "CATEGORY",
                 pricePerUnit,
-                "1",
-                1000,
+                100,
                 img);
             db.saveToDatabase(part);
             return part;

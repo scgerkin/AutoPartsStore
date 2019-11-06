@@ -30,7 +30,6 @@ public class Part implements DatabaseWriteable {
     private String description;
     private String category;
     private BigDecimal pricePerUnit;
-    private String quantityPerUnit;
     private boolean discontinued;
     private Integer quantityOnHand;
     private byte[] image;
@@ -53,9 +52,6 @@ public class Part implements DatabaseWriteable {
      * @param category The category the part belongs to.
      * @param pricePerUnit The price for each unit of a part.
      *                     Non-null required.
-     * @param quantityPerUnit The number of parts to a quantity per an order.
-     *                        Non-null required. If there is only 1 part per
-     *                        order unit, this should be explicit.
      * @param discontinued A flag indicating this part is no longer sold by the
      *                     company.
      * @param quantityOnHand The current number of parts that we have on hand.
@@ -63,7 +59,6 @@ public class Part implements DatabaseWriteable {
      */
     private Part(Integer partID, Business business, Car car, String name,
                  String description, String category, BigDecimal pricePerUnit,
-                 String quantityPerUnit,
                  boolean discontinued, Integer quantityOnHand, byte[] image) {
         setPartID(partID);
         setSupplier(business);
@@ -72,7 +67,6 @@ public class Part implements DatabaseWriteable {
         setDescription(description);
         setCategory(category);
         setPricePerUnit(pricePerUnit);
-        setQuantityPerUnit(quantityPerUnit);
         setDiscontinued(discontinued);
         setQuantityOnHand(quantityOnHand);
         setImage(image);
@@ -92,19 +86,15 @@ public class Part implements DatabaseWriteable {
      * @param category The category the part belongs to.
      * @param pricePerUnit The price for each unit of a part.
      *                     Non-null required.
-
-     * @param quantityPerUnit The number of parts to a quantity per an order.
-     *                        Non-null required. If there is only 1 part per
-     *                        order unit, this should be explicit.
      * @param quantityOnHand The current number of parts that we have on hand.
      * @param image The image associated with this Part.
      * @return A new Part object that is to be written to the database.
      */
     public static Part createNew(Business business, Car car, String name, String description,
                                  String category, BigDecimal pricePerUnit,
-                                 String quantityPerUnit, Integer quantityOnHand, byte[] image) {
+                                 Integer quantityOnHand, byte[] image) {
         return new Part(-1, business, car, name, description, category,
-            pricePerUnit, quantityPerUnit, false, quantityOnHand, image);
+            pricePerUnit,  false, quantityOnHand, image);
     }
 
     /**
@@ -128,9 +118,6 @@ public class Part implements DatabaseWriteable {
      * @param description A brief description of what the part is.
      * @param pricePerUnit The price for each unit of a part.
      *                     Non-null required.
-     * @param quantityPerUnit The number of parts to a quantity per an order.
-     *                        Non-null required. If there is only 1 part per
-     *                        order unit, this should be explicit.
      * @param discontinued A flag indicating this part is no longer sold by the
      *                     company.
      * @param quantityOnHand The current number of parts that we have on hand.
@@ -139,10 +126,10 @@ public class Part implements DatabaseWriteable {
      */
     public static Part createExisting(Integer partID, Business business, Car car,
                                       String name, String category, String description,
-                                      BigDecimal pricePerUnit, String quantityPerUnit,
+                                      BigDecimal pricePerUnit,
                                       boolean discontinued, Integer quantityOnHand, byte[] image) {
         return new Part(partID, business, car, name, description, category,
-            pricePerUnit, quantityPerUnit, discontinued, quantityOnHand, image);
+            pricePerUnit, discontinued, quantityOnHand, image);
     }
 
     /**Getter for partID*/
@@ -218,16 +205,6 @@ public class Part implements DatabaseWriteable {
         this.pricePerUnit = Objects.requireNonNull(pricePerUnit);
     }
 
-    /**Getter for quantityPerUnit*/
-    public String getQuantityPerUnit() {
-        return quantityPerUnit;
-    }
-
-    /**Setter for quantityPerUnit, requires non-null*/
-    public void setQuantityPerUnit(String quantityPerUnit) {
-        this.quantityPerUnit = Objects.requireNonNull(quantityPerUnit);
-    }
-
     /**Getter for discontinued status*/
     public boolean isDiscontinued() {
         return discontinued;
@@ -269,7 +246,6 @@ public class Part implements DatabaseWriteable {
                    Objects.equals(getDescription(), part.getDescription()) &&
                    Objects.equals(getCategory(), part.getCategory()) &&
                    (getPricePerUnit().compareTo(part.getPricePerUnit()) == 0) &&
-                   getQuantityPerUnit().equals(part.getQuantityPerUnit()) &&
                    Objects.equals(getQuantityOnHand(), part.getQuantityOnHand()) &&
                    Arrays.equals(getImage(), part.getImage());
     }
@@ -300,8 +276,8 @@ public class Part implements DatabaseWriteable {
     private PreparedStatement insert(Connection connection) throws SQLException {
         String sql = "INSERT INTO AutoPartsStore.Parts" +
                          " (SupplierID, CarID, Name, Category, PartDescription," +
-                         " PricePerUnit, QuantityPerUnit, Discontinued, QuantityOnHand, Image)" +
-                         " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                         " PricePerUnit, Discontinued, QuantityOnHand, Image)" +
+                         " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         PreparedStatement pStmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         fillParameters(pStmt);
         return pStmt;
@@ -316,7 +292,7 @@ public class Part implements DatabaseWriteable {
     private PreparedStatement update(Connection connection) throws SQLException {
         String sql = "UPDATE AutoPartsStore.Parts" +
                          " SET SupplierID = ?, CarID = ?, Name = ?, Category = ?," +
-                         " PartDescription = ?, PricePerUnit = ?, QuantityPerUnit = ?," +
+                         " PartDescription = ?, PricePerUnit = ?," +
                          " Discontinued = ?, QuantityOnHand = ?, Image = ?" +
                          " WHERE PartID = ?;";
         PreparedStatement pStmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -339,7 +315,6 @@ public class Part implements DatabaseWriteable {
         pStmt.setString(i++, this.getCategory());
         pStmt.setString(i++, this.getDescription());
         pStmt.setBigDecimal(i++, this.getPricePerUnit());
-        pStmt.setString(i++, this.getQuantityPerUnit());
         pStmt.setBoolean(i++, this.isDiscontinued());
         pStmt.setInt(i++, this.getQuantityOnHand());
         if (this.getImage() != null) {

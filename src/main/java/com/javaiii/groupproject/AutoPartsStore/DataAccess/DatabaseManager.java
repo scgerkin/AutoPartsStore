@@ -434,7 +434,6 @@ public class DatabaseManager {
             String category = rs.getString("Category");
             String description = rs.getString("PartDescription");
             BigDecimal pricePerUnit = rs.getBigDecimal("PricePerUnit");
-            String quantityPerUnit = rs.getString("QuantityPerUnit");
             boolean discontinued = rs.getBoolean("Discontinued");
             Integer quantityOnHand = rs.getInt("QuantityOnHand");
             byte[] img;
@@ -446,7 +445,7 @@ public class DatabaseManager {
             }
             Part part = Part.createExisting(
                 partId, supplier, carConfig, name, category, description,
-                pricePerUnit, quantityPerUnit, discontinued, quantityOnHand, img
+                pricePerUnit, discontinued, quantityOnHand, img
             );
             return part;
         }
