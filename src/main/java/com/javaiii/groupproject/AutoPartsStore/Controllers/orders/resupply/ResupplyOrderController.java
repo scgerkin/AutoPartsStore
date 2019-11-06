@@ -1,4 +1,4 @@
-package com.javaiii.groupproject.AutoPartsStore.Controllers;
+package com.javaiii.groupproject.AutoPartsStore.Controllers.orders.resupply;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
@@ -47,10 +47,10 @@ public class ResupplyOrderController {
     private String orderNotes;
     private String selectedVendor;
 
-    @RequestMapping("/startResupplyOrder")
+    @RequestMapping("/orders/resupply/startResupplyOrder")
     public String resupplyOrder(Model model) {
         model.addAttribute("command", new SelectVendorCommand());
-        return "startResupplyOrder";
+        return "orders/resupply/startResupplyOrder";
     }
 
     @ModelAttribute("getListOfVendors")

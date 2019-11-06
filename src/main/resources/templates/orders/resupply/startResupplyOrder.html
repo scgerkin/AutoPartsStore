@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Select a Vendor to Begin Order</h1>
-    <form action="#" th:action="@{/startResupplyOrder}" th:object="${command}" method="post">
+    <form action="#" th:action="@{/orders/resupply/startResupplyOrder}" th:object="${command}" method="post">
         <p>Select Vendor:</p>
         <select th:field="*{selectedVendor}">
             <option th:each="vendor: ${getListOfVendors}"
