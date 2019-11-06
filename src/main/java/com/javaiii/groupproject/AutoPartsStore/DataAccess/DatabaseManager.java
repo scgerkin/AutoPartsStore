@@ -81,9 +81,9 @@ public class DatabaseManager {
         Class.forName("com.mysql.cj.jdbc.Driver");
         String serverName = "jdbc:mysql://scgrk-db-test.crd1qvhssojx.us-east-1.rds.amazonaws.com";
         try {
-            System.out.println("Attempting to connect to database...");
+            System.out.println("\t\tAttempting to connect to database...");
             connection = DriverManager.getConnection(serverName, "testuser", "javaiii");
-            System.out.println("Connection Success: REMOTE HOST");
+            System.out.println("\t\tConnection Success: REMOTE HOST");
         }
         catch (SQLException ex) {
             // if cannot connect to remote database, connect to local host
@@ -111,9 +111,9 @@ public class DatabaseManager {
     private void connectToLocalHostDatabase() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         String serverName = "jdbc:mysql://localhost";
-        System.out.println("Local host connection attempt...");
+        System.out.println("\t\tLocal host connection attempt...");
         connection = DriverManager.getConnection(serverName, "testuser", "javaiii");
-        System.out.println("Connection Success: LOCAL HOST");
+        System.out.println("\t\tConnection Success: LOCAL HOST");
     }
 
     /**
