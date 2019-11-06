@@ -4,6 +4,7 @@ import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
 import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.ResupplyOrderCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.SupplierCommand;
 import com.javaiii.groupproject.AutoPartsStore.exceptions.EmptyListException;
@@ -31,6 +32,8 @@ public class ResupplyOrderController {
     private List<Part> activeParts = new ArrayList<>();
     private List<String> availableSuppliers = new ArrayList<>();
     private List<Part> partsFilteredBySupplier = new ArrayList<>();
+    private Map<Integer, Integer> partIdQuantityMap;
+
 
     // Constants for tax and shipping rates
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
@@ -104,15 +107,24 @@ public class ResupplyOrderController {
         return "redirect:/orders/resupply/selectParts";
     }
 
-//    @ModelAttribute("getPartsFilteredBySupplier")
-//    public List<Part> getPartsFilteredBySupplier() {
-//        return partsFilteredBySupplier;
-//    }
-
     @RequestMapping("orders/resupply/selectParts")
     public String selectParts(Model model) {
-        model.addAttribute("command", new ResupplyOrderCommand());
+        model.addAttribute("partCommand", new PartCommand());
+        partIdQuantityMap = new HashMap<>();
         return "orders/resupply/selectParts";
+    }
+
+    @PostMapping("/orders/resupply/selectParts")
+    public void selectPartsPost(@ModelAttribute("partCommand") PartCommand partCommand,
+                                  BindingResult bindingResult) {
+        System.out.println("Part addition submission");
+        if (bindingResult.hasErrors()) {
+            System.out.println("Binding Result has errors");
+        }
+        Integer partID = partCommand.getId();
+        Integer quantity = partCommand.getQuantity();
+        partIdQuantityMap.put(partID, quantity);
+        System.out.println("Add part to order: ID " + partID + " quantity: " + quantity);
     }
 
     /**For building the list of currently not discontinued Parts*/

@@ -7,26 +7,25 @@
 <body>
     <h1>Select the parts to order</h1>
     <div th:if="${partsFilteredBySupplier}">
-        <table>
-            <tr>
-                <th>Part ID</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Supplier</th>
-                <th>Unit Price</th>
-                <th>Quantity in Stock</th>
-            </tr>
-            <tr th:each="part : ${partsFilteredBySupplier}">
-                <td th:text="${part.partID}">ID</td>
-                <td th:text="${part.name}">Name</td>
-                <td th:text="${part.category}">Category</td>
-                <td th:text="${part.description}">Description</td>
-                <td th:text="${part.supplier.companyName}">Supplier</td>
-                <td th:text="${part.pricePerUnit}">Unit Price</td>
-                <td th:text="${part.quantityOnHand}">Quantity in Stock</td>
-            </tr>
-        </table>
+        <div th:each="part : ${partsFilteredBySupplier}">
+            <form action="#" th:action="@{/orders/resupply/selectParts}" th:object="${partCommand}" method="post">
+                <p>
+                <td th:text="${part.name}">Name</td><br/>
+                Part ID: <td th:text="${part.partID}">ID</td><br/>
+                Supplier: <td th:text="${part.supplier.companyName}">Supplier</td><br/>
+                Category: <td th:text="${part.category}">Category</td><br/>
+                Description:<br/>
+                <td th:text="${part.description}">Description</td><br/>
+                Current Number in stock: <td th:text="${part.quantityOnHand}">Quantity in Stock</td><br/>
+                Unit Price: <strong><td th:text="${part.pricePerUnit}">Unit Price</td></strong><br/>
+
+                Enter amount to order: <input type="number" th:field="*{quantity}"/><br/>
+                <!-- Grab the Part ID of the current part to submit with the quantity-->
+                <input type="hidden" th:value="${part.partID}" name="id"/>
+                <input type="submit" value="Add to cart"/><input type="reset" value="Reset"/>
+                </p>
+            </form>
+        </div>
     </div>
 </body>
 </html>
