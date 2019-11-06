@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Resupply Order</title>
+</head>
+<body>
+    <h1>Select a Vendor to Begin Order</h1>
+    <form action="#" th:action="@{/startResupplyOrder}" th:object="${command}" method="post">
+        <p>Select Vendor:</p>
+        <select th:field="*{selectedVendor}">
+            <option th:each="vendor: ${getListOfVendors}"
+                    th:value="${vendor}"
+                    th:text="${vendor}" ></option>
+        </select>
+        <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /> </p>
+    </form>
+</body>
+</html>

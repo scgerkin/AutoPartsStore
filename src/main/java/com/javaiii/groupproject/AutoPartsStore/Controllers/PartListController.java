@@ -12,7 +12,7 @@ import java.util.List;
 @Controller
 public class PartListController {
 
-    @RequestMapping("/part-list")
+    @RequestMapping("/partList")
     public String partList(Model model) {
         DatabaseManager db = new DatabaseManager();
         List<Part> parts = null;
@@ -24,6 +24,6 @@ public class PartListController {
         }
 
         model.addAttribute("parts", parts);
-        return "part-list";
+        return "partList";
     }
 }

@@ -4,9 +4,12 @@ import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
 import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.command.SelectVendorCommand;
 import com.javaiii.groupproject.AutoPartsStore.exceptions.PersonNotFoundException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -15,8 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 public class ResupplyOrderController {
+
+    DatabaseManager db;
 
     // Constants for tax and shipping rates
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
@@ -42,18 +47,28 @@ public class ResupplyOrderController {
     private String orderNotes;
     private String selectedVendor;
 
+    @RequestMapping("/startResupplyOrder")
+    public String resupplyOrder(Model model) {
+        model.addAttribute("command", new SelectVendorCommand());
+        return "startResupplyOrder";
+    }
+
+    @ModelAttribute("getListOfVendors")
+    public List<String> getListOfVendors() {
+        init();
+        return vendorNames;
+    }
 
     public ResupplyOrderController() {
         init();
     }
 
-    @RequestMapping("/resupplyOrder")
-    public void init() {
+    private void init() {
         errorMsg = "";
         orderNotes = "";
 
         try {
-            DatabaseManager db = new DatabaseManager();
+            connect();
             parts = db.getAllActiveParts();
         }
         catch (SQLException ex){
@@ -70,6 +85,10 @@ public class ResupplyOrderController {
                     !part.getSupplier().getCompanyName().equals("Auto Parts Store"))
                 vendorNames.add(part.getSupplier().getCompanyName());
         }
+    }
+
+    private void connect() {
+        db = new DatabaseManager(true);
     }
 
     /**
@@ -160,7 +179,7 @@ public class ResupplyOrderController {
             return link;
         } else {
             try {
-                DatabaseManager db = new DatabaseManager(true);
+                connect();
                 orderEmployee = db.getEmployeeByEmail(orderEmployeeEmail);
                 this.createResupplyOrder();
                 link = "placeorder";
@@ -200,7 +219,7 @@ public class ResupplyOrderController {
      */
     public String placeOrder() {
         try {
-            DatabaseManager db = new DatabaseManager();
+            connect();
             db.saveToDatabase(resupplyOrder);
             link = "orderconfirmation";
             return link;

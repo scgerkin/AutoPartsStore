@@ -20,7 +20,6 @@
             <th>Vendor</th>
             <th>Unit Price</th>
             <th>Quantity in Stock</th>
-            <th>Image</th>
         </tr>
         <tr th:each="part : ${parts}">
             <td th:text="${part.partID}">ID</td>
@@ -30,7 +29,6 @@
             <td th:text="${part.supplier.companyName}">Vendor</td>
             <td th:text="${part.pricePerUnit}">Unit Price</td>
             <td th:text="${part.quantityOnHand}">Quantity in Stock</td>
-            <td th:img="${part.image}">Image</td>
         </tr>
     </table>
 </div>
