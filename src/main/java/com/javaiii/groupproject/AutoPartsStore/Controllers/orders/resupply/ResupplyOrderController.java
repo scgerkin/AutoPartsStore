@@ -7,6 +7,7 @@ import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 import com.javaiii.groupproject.AutoPartsStore.command.IdCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.SingleStrCommand;
+import com.javaiii.groupproject.AutoPartsStore.exceptions.PersonNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -92,10 +93,12 @@ public class ResupplyOrderController {
         try {
             orderingEmployee = db.getEmployeeByID(employeeID);
         }
+        catch (PersonNotFoundException ex) {
+            return "errors/invalidIdEntry";
+        }
         catch (SQLException ex) {
-            //todo handle
-            System.err.println("INVALID EMPLOYEE ID");
-            ex.printStackTrace();
+            System.err.println("DATABASE ACCESS ERROR");
+            return "errors/databaseWriteError";
         }
 
         model.addAttribute("activeParts", activeParts);
@@ -184,7 +187,7 @@ public class ResupplyOrderController {
             db.saveToDatabase(resupplyOrder);
         }
         catch (SQLException ex) {
-            return "../../errors/databaseWriteError";
+            return "errors/databaseWriteError";
         }
 
         return "orders/orderPlaced";
