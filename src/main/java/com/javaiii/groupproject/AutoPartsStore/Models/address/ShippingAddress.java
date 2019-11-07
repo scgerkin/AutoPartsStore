@@ -57,4 +57,9 @@ public class ShippingAddress extends Address {
         ShippingAddress that = (ShippingAddress) o;
         return Objects.equals(shipName, that.shipName);
     }
+
+    @Override
+    public String toString() {
+        return (getShipName() + "\n" + super.toString());
+    }
 }

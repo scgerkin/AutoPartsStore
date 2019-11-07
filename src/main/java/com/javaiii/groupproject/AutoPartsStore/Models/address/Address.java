@@ -134,4 +134,14 @@ public class Address {
                    Arrays.equals(getState(), address.getState()) &&
                    Arrays.equals(getZipCode(), address.getZipCode());
     }
+
+    @Override
+    public String toString() {
+        return (
+            getStreet() + "\n" +
+            getCity() + ", " +
+            String.valueOf(getState()) + " " +
+            String.valueOf(getZipCode())
+        );
+    }
 }
