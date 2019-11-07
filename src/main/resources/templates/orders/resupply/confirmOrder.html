@@ -8,6 +8,10 @@
 </head>
 <body>
 <div class="container">
+  <div th:unless="${orderHasItems}">
+    <h1>Empty cart</h1>
+    <a href="/orders/resupply/startResupplyOrder">Return to order page</a>
+  </div>
   <div th:if="${orderHasItems}">
     <h1>Order Confirmation</h1>
     <div id="orderItems">
@@ -39,7 +43,13 @@
       </p>
     </div>
     <div id="buttons">
-      <form id="orderConfirmation" action="#" th:action="@{/orders/resupply/placeOrder}" method="post">
+      <form id="orderConfirmation"
+            action="#"
+            th:action="@{/orders/resupply/placeOrder}"
+            th:object="${orderNotesCommand}"
+            method="post">
+        Add order notes:<br/>
+        <textarea th:field="*{value}"/><br/>
         <button type="submit" name="action" value="placeOrder">Place order</button>
         <button type="submit" name="action" value="cancelOrder">Cancel order</button>
       </form>

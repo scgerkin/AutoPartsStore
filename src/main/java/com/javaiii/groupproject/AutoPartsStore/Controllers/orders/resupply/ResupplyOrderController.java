@@ -4,8 +4,9 @@ import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
 import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
-import com.javaiii.groupproject.AutoPartsStore.command.EmployeeCommand;
+import com.javaiii.groupproject.AutoPartsStore.command.IdCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
+import com.javaiii.groupproject.AutoPartsStore.command.SingleStrCommand;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,7 +64,7 @@ public class ResupplyOrderController {
     public String startResupplyOrder(Model model) {
         connect();
         init();
-        model.addAttribute("employeeCommand", new EmployeeCommand());
+        model.addAttribute("employeeCommand", new IdCommand());
         return "orders/resupply/startResupplyOrder";
     }
 
@@ -75,7 +76,7 @@ public class ResupplyOrderController {
 
     /**For handling user selection of Supplier*/
     @PostMapping("/orders/resupply/startResupplyOrder")
-    public String supplierPost(@ModelAttribute("employeeCommand") EmployeeCommand employeeCommand,
+    public String supplierPost(@ModelAttribute("employeeCommand") IdCommand employeeCommand,
                                BindingResult bindingResult, // MUST follow command
                                Model model,
                                RedirectAttributes redirectAttributes) {
@@ -91,14 +92,16 @@ public class ResupplyOrderController {
             orderingEmployee = db.getEmployeeByID(employeeID);
         }
         catch (SQLException ex) {
+            //todo handle
             System.err.println("INVALID EMPLOYEE ID");
             ex.printStackTrace();
         }
 
         model.addAttribute("activeParts", activeParts);
-        redirectAttributes.addFlashAttribute("employeeCommand", employeeCommand);
         redirectAttributes.addFlashAttribute("activeParts", activeParts);
+        redirectAttributes.addFlashAttribute("employeeCommand", employeeCommand);
         redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
+
 
         if (partOrderMap.isEmpty()) {
             for (Part part : activeParts) {
@@ -112,7 +115,7 @@ public class ResupplyOrderController {
 
     /**Processes adding a part to the order*/
     @PostMapping("/orders/resupply/selectParts")
-    public String selectPartsPost(@ModelAttribute("employeeCommand") EmployeeCommand employeeCommand,
+    public String selectPartsPost(@ModelAttribute("employeeCommand") IdCommand employeeCommand,
                                   @ModelAttribute("partCommand") PartCommand partCommand,
                                   BindingResult bindingResult,
                                   Model model,
@@ -143,9 +146,14 @@ public class ResupplyOrderController {
     }
 
     @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=confirmOrder")
-    public ModelAndView checkout() {
+    public ModelAndView checkout(@ModelAttribute("orderNotesCommand")SingleStrCommand orderNotesCommand,
+                                 BindingResult bindingResult,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
         System.out.println("CONFIRM ORDER");
+        redirectAttributes.addFlashAttribute("orderNotesCommand", new SingleStrCommand());
         ModelAndView modelAndView = new ModelAndView("/orders/resupply/confirmOrder.html");
+
         return modelAndView;
     }
 
@@ -159,8 +167,10 @@ public class ResupplyOrderController {
     }
 
     @RequestMapping(value="/orders/resupply/placeOrder", method=RequestMethod.POST, params="action=placeOrder")
-    public String placeOrder() {
+    public String placeOrder(@ModelAttribute("orderNotesCommand")SingleStrCommand orderNotesCommand) {
         System.out.println("PLACE ORDER");
+
+        System.out.println(orderNotesCommand.getValue());
 
         try {
             ResupplyOrder resupplyOrder = ResupplyOrder.createNew(
@@ -168,7 +178,7 @@ public class ResupplyOrderController {
                 getShippingFee(),
                 getOrderedItems(),
                 getOrderTaxAmount(),
-                null//fixme
+                orderNotesCommand.getValue()
             );
             db.saveToDatabase(resupplyOrder);
         }

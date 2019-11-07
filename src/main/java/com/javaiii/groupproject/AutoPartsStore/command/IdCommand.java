@@ -1,12 +1,12 @@
 package com.javaiii.groupproject.AutoPartsStore.command;
 
-public class EmployeeCommand {
+public class IdCommand {
     Integer id;
 
-    public EmployeeCommand() {
+    public IdCommand() {
     }
 
-    public EmployeeCommand(Integer id) {
+    public IdCommand(Integer id) {
         this.id = id;
     }
 
