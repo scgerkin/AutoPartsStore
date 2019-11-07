@@ -1,6 +1,7 @@
 package com.javaiii.groupproject.AutoPartsStore.Controllers.orders.resupply;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
+import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 import com.javaiii.groupproject.AutoPartsStore.command.CartCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
@@ -165,6 +166,21 @@ public class ResupplyOrderController {
     @RequestMapping(value="/orders/resupply/placeOrder", method=RequestMethod.POST, params="action=placeOrder")
     public String placeOrder() {
         System.out.println("PLACE ORDER");
+
+        try {
+            ResupplyOrder resupplyOrder = ResupplyOrder.createNew(
+                db.getEmployeeByID(1),
+                getShippingFee(),
+                getOrderedItems(),
+                getOrderTaxAmount(),
+                null
+            );
+            db.saveToDatabase(resupplyOrder);
+        }
+        catch (SQLException ex) {
+            return "../../errors/databaseWriteError";
+        }
+
         return "orders/orderPlaced";
     }
 
