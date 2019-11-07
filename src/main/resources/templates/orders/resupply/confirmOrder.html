@@ -1,14 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
-    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+  <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
 <div class="container">
-CHECKOUT
+  <div th:if="${orderHasItems}">
+    <h1>Order Confirmation</h1>
+    <div id="orderItems">
+      <table>
+        <tr>
+          <td>Part ID</td>
+          <td>Name</td>
+          <td>Unit Price</td>
+          <td>Quantity</td>
+          <td>Total Cost</td>
+        </tr>
+        <tr th:each="entry : ${getOrderedItems}">
+          <td th:text="${entry.key.partID}">Part ID</td>
+          <td th:text="${entry.key.name}">Name</td>
+          <td th:text="${entry.key.pricePerUnit}">Unit Price</td>
+          <td th:text="${entry.value}">Quantity</td>
+          <span th:with="result=${entry.value * entry.key.pricePerUnit}">
+          <td th:text="${result}">Total Cost</td>
+        </span>
+        </tr>
+      </table>
+    </div>
+    <div id="orderTotal">
+      <p>
+        Subtotal: <span th:text="${getOrderSubtotalCost}"/><br/>
+        Tax Amount: <span th:text="${getOrderTaxAmount}"/><br/>
+        Shipping Fee: <span th:text="${getShippingFee}"/><br/>
+        <strong>Total order cost: <span th:text="${getOrderTotalCost}"/></strong>
+      </p>
+    </div>
+    <div id="buttons">
+      <form id="orderConfirmation" action="#" th:action="@{/orders/resupply/placeOrder}" method="post">
+        <button type="submit" name="action" value="placeOrder">Place order</button>
+        <button type="submit" name="action" value="cancelOrder">Cancel order</button>
+      </form>
+    </div>
+  </div>
 </div>
 </body>
 </html>

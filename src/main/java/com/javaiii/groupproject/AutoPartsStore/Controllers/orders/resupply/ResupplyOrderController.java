@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,12 +154,24 @@ public class ResupplyOrderController {
     }
 
     @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=cancelOrder")
-    public String emptyCart(Model model) {
+    public String emptyCart() {
         System.out.println("CANCEL ORDER");
         for (Part key : partOrderMap.keySet()) {
             partOrderMap.put(key, 0);
         }
         return "index";
+    }
+
+    @RequestMapping(value="/orders/resupply/placeOrder", method=RequestMethod.POST, params="action=placeOrder")
+    public String placeOrder() {
+        System.out.println("PLACE ORDER");
+        return "orders/orderPlaced";
+    }
+
+    @RequestMapping(value="/orders/resupply/placeOrder", method=RequestMethod.POST, params="action=cancelOrder")
+    public String cancelOrder() {
+        System.out.println("STOP ORDER");
+        return emptyCart();
     }
 
     @RequestMapping("orders/resupply/selectParts")
@@ -188,14 +201,61 @@ public class ResupplyOrderController {
         return orderedItems;
     }
 
-    @ModelAttribute("cartHasItems")
-    public boolean cartHasItems() {
+    @ModelAttribute("orderHasItems")
+    public boolean orderHasItems() {
         for (Integer quant: partOrderMap.values()) {
             if (quant.compareTo(0) > 0) {
                 return true;
             }
         }
         return false;
+    }
+
+    @ModelAttribute("getOrderSubtotalCost")
+    public String getOrderSubtotalCostString() {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        return nf.format(getOrderSubtotalCost());
+    }
+
+    private BigDecimal getOrderSubtotalCost() {
+        BigDecimal total = new BigDecimal(0);
+        for (Map.Entry<Part, Integer> entry : orderedItems.entrySet()) {
+            BigDecimal unitCost = entry.getKey().getPricePerUnit();
+            Integer quantity = entry.getValue();
+            BigDecimal unitPrice = unitCost.multiply(new BigDecimal(quantity));
+            total = total.add(unitPrice);
+        }
+        return total;
+    }
+
+    @ModelAttribute("getOrderTaxAmount")
+    public String getOrderTaxAmountString() {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        return nf.format(getOrderTaxAmount());
+    }
+
+    public BigDecimal getOrderTaxAmount() {
+        return SALES_TAX_RATE.multiply(getOrderSubtotalCost());
+    }
+
+    @ModelAttribute("getShippingFee")
+    public String getShippingFeeString() {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        return nf.format(getShippingFee());
+    }
+
+    public BigDecimal getShippingFee() {
+        return getFLAT_SHIPPING_FEE();
+    }
+
+    @ModelAttribute("getOrderTotalCost")
+    public String getOrderTotalCostString() {
+        NumberFormat nf = NumberFormat.getCurrencyInstance();
+        return nf.format(getTotalOrderCost());
+    }
+
+    public BigDecimal getTotalOrderCost() {
+        return getOrderSubtotalCost().add(getOrderTaxAmount().add(getShippingFee()));
     }
 
     /**Updates the list of ordered items with the quantity*/
