@@ -29,7 +29,7 @@
                 <!--For adding a part to an order-->
                 <td>
                 <form id="addPartForm" action="#" th:action="@{/orders/resupply/selectParts}" th:object="${partCommand}" method="post">
-                    <input type="number" th:value="0" th:field="*{quantity}"/>
+                    <input type="number" min="0" step="1" th:field="*{quantity}"/>
                     <input type="hidden" th:value="${part.partID}" name="id"/>
                     <input type="submit" value="Add to cart"/>
                 </form>
