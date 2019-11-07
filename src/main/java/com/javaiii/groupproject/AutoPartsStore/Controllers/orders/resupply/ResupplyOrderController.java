@@ -98,7 +98,7 @@ public class ResupplyOrderController {
         }
         catch (SQLException ex) {
             System.err.println("DATABASE ACCESS ERROR");
-            return "errors/databaseWriteError";
+            return "errors/databaseError";
         }
 
         model.addAttribute("activeParts", activeParts);
@@ -128,16 +128,16 @@ public class ResupplyOrderController {
         if (bindingResult.hasErrors()) {
             System.out.println("Binding Result has errors");
         }
-        Integer partID = partCommand.getId();
+        Integer partId = partCommand.getId();
         Integer quantity = partCommand.getQuantity();
-        System.out.println("PartID: " + partID + " quantity: " + quantity);
+        System.out.println("PartID: " + partId + " quantity: " + quantity);
 
         if (quantity == null) {
             quantity = 0;
         }
 
         for (Part part : partOrderMap.keySet()) {
-            if (part.getPartID().equals(partID)) {
+            if (part.getPartID().equals(partId)) {
                 partOrderMap.put(part, quantity);
             }
         }
@@ -187,7 +187,7 @@ public class ResupplyOrderController {
             db.saveToDatabase(resupplyOrder);
         }
         catch (SQLException ex) {
-            return "errors/databaseWriteError";
+            return "errors/databaseError";
         }
 
         return "orders/orderPlaced";
