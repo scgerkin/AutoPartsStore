@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Resupply Order</title>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
+<div class="container">
     <h1>Select the parts to order</h1>
     <div th:if="${partsFilteredBySupplier}">
         <table>
@@ -48,5 +51,6 @@
             </p>
         </div>
     </div>
+</div>
 </body>
 </html>

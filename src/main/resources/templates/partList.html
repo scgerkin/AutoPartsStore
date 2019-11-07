@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Thymeleaf Demo</title>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <head>
     <meta charset="UTF-8">
@@ -10,6 +12,7 @@
 </head>
 <body>
 <h3>Part List</h3>
+<div class="container">
 <div th:if="${parts}">
     <table>
         <tr>
@@ -32,7 +35,6 @@
         </tr>
     </table>
 </div>
-
-
+</div>
 </body>
 </html>

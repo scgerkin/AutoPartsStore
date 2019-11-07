@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Resupply Order</title>
+    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
+<div class="container">
     <h1>Select a Vendor to Begin Order</h1>
     <form action="#" th:action="@{/orders/resupply/startResupplyOrder}" th:object="${command}" method="post">
         <p>Select Vendor:</p>
@@ -15,5 +18,6 @@
         </select>
         <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /> </p>
     </form>
+</div>
 </body>
 </html>
