@@ -39,9 +39,17 @@
                 </td>
             </tr>
         </table>
-        <div>
-            <p>
-                Order Notes<br/>
+        <div th:if="${getOrderedItems}">
+            <table>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                </tr>
+                <tr th:each="entry : ${getOrderedItems}">
+                    <td th:text="${entry.getKey()}">Item Name</td>
+                    <td th:text="${entry.getValue()}">Quantity</td>
+                </tr>
+            </table>
                 <form id="cartOptions" action="#" th:action="@{/orders/resupply/handleCart}" th:object="${cartCommand}" method="post">
                 <textarea th:field="*{notes}" value="${getOrderNotes}">Order Notes</textarea><br/>
                 Employee ID: <input type="text" th:field="*{employeeID}"/><br/>

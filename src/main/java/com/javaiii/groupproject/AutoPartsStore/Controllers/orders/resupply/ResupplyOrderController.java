@@ -173,12 +173,41 @@ public class ResupplyOrderController {
         return partIdQuantityMap;
     }
 
+    @ModelAttribute("getOrderedItems")
+    public Map<String, Integer> getOrderedItems() {
+        Map<String, Integer> orderedItems = new HashMap<>();
+        try {
+            for (Map.Entry<Integer, Integer> entry : partIdQuantityMap.entrySet()) {
+                Integer orderAmt = entry.getValue();
+                if (orderAmt.compareTo(0) > 0) {
+                    String itemName = db.getPartName(entry.getKey());
+                    orderedItems.put(itemName, orderAmt);
+                }
+            }
+        }
+        catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return orderedItems;
+    }
+
     @RequestMapping("orders/resupply/getNumOrdered")
     public Integer getNumOrdered(Integer partID) {
         System.out.println("getNumOrdered called:");
         System.out.println("PartID: " + partID);
         return 5;
     }
+
+    @ModelAttribute("cartHasItems")
+    public boolean cartHasItems() {
+        for (Integer quant: partIdQuantityMap.values()) {
+            if (quant.compareTo(0) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**For building the list of currently not discontinued Parts*/
     private void buildPartList() {

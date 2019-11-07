@@ -243,6 +243,18 @@ public class DatabaseManager {
         return parts;
     }
 
+    public String getPartName(Integer partID) throws SQLException {
+        String sql = "SELECT Name from AutoPartsStore.Parts WHERE PartID = ?;";
+        PreparedStatement pStmt = connection.prepareStatement(sql);
+        pStmt.setInt(1, partID);
+        ResultSet rs = pStmt.executeQuery();
+        String name= "";
+        while (rs.next()) {
+            name = rs.getString(1);
+        }
+        return name;
+    }
+
     /**
      * Writes a database object that implements DatabaseWriteable to the database.
      * Can be used for new or updated information.
