@@ -203,7 +203,7 @@ public class ResupplyOrderController {
     }
 
     @ModelAttribute("getOrderNotes")
-    public String getOrderNotes() {
+    public String getOrderNotes() {//fixme deprecate
         return orderNotes;
     }
 
