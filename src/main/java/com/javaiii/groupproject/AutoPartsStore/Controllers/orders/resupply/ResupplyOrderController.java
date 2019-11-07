@@ -150,15 +150,13 @@ public class ResupplyOrderController {
     }
 
     @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=confirmOrder")
-    public ModelAndView checkout(@ModelAttribute("orderNotesCommand")SingleStrCommand orderNotesCommand,
+    public String checkout(@ModelAttribute("orderNotesCommand")SingleStrCommand orderNotesCommand,
                                  BindingResult bindingResult,
                                  Model model,
                                  RedirectAttributes redirectAttributes) {
         System.out.println("CONFIRM ORDER");
         redirectAttributes.addFlashAttribute("orderNotesCommand", new SingleStrCommand());
-        ModelAndView modelAndView = new ModelAndView("/orders/resupply/confirmOrder.html");
-
-        return modelAndView;
+        return "orders/resupply/confirmOrder";
     }
 
     @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=cancelOrder")
