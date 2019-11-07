@@ -4,6 +4,13 @@ public class PartCommand {
     Integer id;
     Integer quantity;
 
+    public PartCommand() {}
+
+    public PartCommand(Integer id, Integer quantity) {
+        this.id = id;
+        this.quantity = quantity;
+    }
+
     public Integer getId() {
         return id;
     }

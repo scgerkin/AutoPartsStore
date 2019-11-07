@@ -11,9 +11,8 @@ import com.javaiii.groupproject.AutoPartsStore.exceptions.EmptyListException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
@@ -123,6 +122,22 @@ public class ResupplyOrderController {
         return "orders/resupply/selectParts";
     }
 
+    @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=checkout")
+    public ModelAndView checkout() {
+        System.out.println("CHECKOUT");
+        ModelAndView modelAndView = new ModelAndView("/orders/resupply/checkout.html");
+        return modelAndView;
+    }
+
+    @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=emptyCart")
+    public String emptyCart(Model model) {
+        System.out.println("EMPTY CART");
+        for (Integer key : partIdQuantityMap.keySet()) {
+            partIdQuantityMap.put(key, 0);
+        }
+        return startResupplyOrder(model);
+    }
+
     @RequestMapping("orders/resupply/selectParts")
     public String selectParts(Model model) {
         return "orders/resupply/selectParts";
@@ -142,11 +157,6 @@ public class ResupplyOrderController {
     @ModelAttribute("partIdQuantityMap")
     public Map<Integer, Integer> getPartIdQuantityMap() {
         return partIdQuantityMap;
-    }
-
-    @RequestMapping("/orders/resuppy/checkout")
-    public String checkout() {
-        return "/";
     }
 
     @RequestMapping("orders/resupply/getNumOrdered")

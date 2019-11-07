@@ -29,7 +29,7 @@
                 <!--For adding a part to an order-->
                 <td>
                 <form id="addPartForm" action="#" th:action="@{/orders/resupply/selectParts}" th:object="${partCommand}" method="post">
-                    <input type="number" th:field="*{quantity}"/>
+                    <input type="number" th:value="0" th:field="*{quantity}"/>
                     <input type="hidden" th:value="${part.partID}" name="id"/>
                     <input type="submit" value="Add to cart"/>
                 </form>
@@ -39,11 +39,11 @@
         <div>
             <p>
                 Order Notes<br/>
-                <form id="cartOptions" action="#" th:action="@{/orders/resupply/selectParts}" th:object="${cartCommand}" method="post">
+                <form id="cartOptions" action="#" th:action="@{/orders/resupply/handleCart}" th:object="${cartCommand}" method="post">
                 <textarea th:field="*{notes}" value="${getOrderNotes}">Order Notes</textarea><br/>
                 Employee ID: <input type="text" th:field="*{employeeID}"/><br/>
-                <button type="button" th:action="@{/orders/resupply/checkout}">Checkout</button>
-                <button type="button" th:action="@{/orders/resupply/emptyCart}">Empty Cart</button>
+                <button type="submit" name="action" value="checkout">Checkout</button>
+                <button type="submit" name="action" value="emptyCart">Cancel Order</button>
                 </form>
             </p>
         </div>
