@@ -1,8 +1,6 @@
 package com.javaiii.groupproject.AutoPartsStore.Controllers.orders.resupply;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
-import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
-import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
 import com.javaiii.groupproject.AutoPartsStore.command.CartCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
@@ -27,9 +25,9 @@ public class ResupplyOrderController {
 
     DatabaseManager db;
 
-    private List<Part> activeParts = new ArrayList<>();
-    private List<String> availableSuppliers = new ArrayList<>();
-    private List<Part> partsFilteredBySupplier = new ArrayList<>();
+    private List<Part> activeParts;
+    private List<String> availableSuppliers;
+    private List<Part> partsFilteredBySupplier;
     private Map<Integer, Integer> partIdQuantityMap;
     private String orderNotes;
 
@@ -41,6 +39,7 @@ public class ResupplyOrderController {
     /**Default constructor connects to the database only*/
     public ResupplyOrderController() {
         connect();
+        init();
     }
 
     /**Initializes a connection to the database*/
@@ -48,9 +47,20 @@ public class ResupplyOrderController {
         db = new DatabaseManager(true);
     }
 
+    /**Reset all member variables when we come to a Resupply*/
+    private void init() {
+        activeParts = new ArrayList<>();
+        availableSuppliers = new ArrayList<>();
+        partsFilteredBySupplier = new ArrayList<>();
+        partIdQuantityMap = new HashMap<>();
+        orderNotes = "";
+    }
+
     /**For setting the Command object we will use for resupply orders*/
     @RequestMapping("/orders/resupply/startResupplyOrder")
     public String startResupplyOrder(Model model) {
+        connect();
+        init();
         model.addAttribute("command", new SupplierCommand());
         return "orders/resupply/startResupplyOrder";
     }
@@ -111,6 +121,10 @@ public class ResupplyOrderController {
         Integer partID = partCommand.getId();
         Integer quantity = partCommand.getQuantity();
 
+        if (quantity == null) {
+            quantity = 0;
+        }
+
         partIdQuantityMap.put(partID, quantity);
 
         redirectAttributes.addFlashAttribute("command", command);
@@ -168,7 +182,6 @@ public class ResupplyOrderController {
 
     /**For building the list of currently not discontinued Parts*/
     private void buildPartList() {
-        connect();
         try {
             activeParts = db.getAllActiveParts();
         }
