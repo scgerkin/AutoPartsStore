@@ -1,4 +1,4 @@
-package com.javaiii.groupproject.AutoPartsStore.command;
+package com.javaiii.groupproject.AutoPartsStore.Controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 

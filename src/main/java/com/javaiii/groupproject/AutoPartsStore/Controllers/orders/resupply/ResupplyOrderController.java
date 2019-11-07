@@ -2,11 +2,10 @@ package com.javaiii.groupproject.AutoPartsStore.Controllers.orders.resupply;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
+import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
-import com.javaiii.groupproject.AutoPartsStore.command.CartCommand;
+import com.javaiii.groupproject.AutoPartsStore.command.EmployeeCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
-import com.javaiii.groupproject.AutoPartsStore.command.SupplierCommand;
-import com.javaiii.groupproject.AutoPartsStore.exceptions.EmptyListException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,15 +26,13 @@ public class ResupplyOrderController {
 
     DatabaseManager db;
 
+    private Employee orderingEmployee;
     private List<Part> activeParts;
-    private List<String> availableSuppliers;
-    private List<Part> partsFilteredBySupplier;
     private Map<Part, Integer> partOrderMap;
     private Map<Part, Integer> orderedItems;
 
     private String orderNotes;
 
-    // Constants for tax and shipping rates
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
     private final BigDecimal FLAT_SHIPPING_FEE = new BigDecimal(10.00);
 
@@ -57,8 +54,6 @@ public class ResupplyOrderController {
     /**Reset all member variables when we come to a Resupply*/
     private void init() {
         activeParts = new ArrayList<>();
-        availableSuppliers = new ArrayList<>();
-        partsFilteredBySupplier = new ArrayList<>();
         partOrderMap = new HashMap<>();
         orderNotes = "";
     }
@@ -68,15 +63,8 @@ public class ResupplyOrderController {
     public String startResupplyOrder(Model model) {
         connect();
         init();
-        model.addAttribute("command", new SupplierCommand());
+        model.addAttribute("employeeCommand", new EmployeeCommand());
         return "orders/resupply/startResupplyOrder";
-    }
-
-    /**For getting the list of available Vendors based on active Parts*/
-    @ModelAttribute("getListOfSuppliers")
-    public List<String> getListOfSuppliers() {
-        buildSupplierList();
-        return availableSuppliers;
     }
 
     @ModelAttribute("getListOfActiveParts")
@@ -87,26 +75,33 @@ public class ResupplyOrderController {
 
     /**For handling user selection of Supplier*/
     @PostMapping("/orders/resupply/startResupplyOrder")
-    public String supplierPost(@ModelAttribute("command") SupplierCommand command,
+    public String supplierPost(@ModelAttribute("employeeCommand") EmployeeCommand employeeCommand,
                                BindingResult bindingResult, // MUST follow command
                                Model model,
                                RedirectAttributes redirectAttributes) {
-        System.out.println("Supplier Selection Submission");
+        System.out.println("Employee ID entered.");
         if (bindingResult.hasErrors()) {
             System.out.println("Binding Result has errors");
             return "orders/resupply/startResupplyOrder";
         }
-        // build the list of available parts based on the selected vendor
-        String selectedSupplier = command.getSelectedSupplier();
-        partsFilteredBySupplier = getPartsBySupplier(selectedSupplier);
-        model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
-        redirectAttributes.addFlashAttribute("command", command);
-        redirectAttributes.addFlashAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
+
+        Integer employeeID = employeeCommand.getId();
+
+        try {
+            orderingEmployee = db.getEmployeeByID(employeeID);
+        }
+        catch (SQLException ex) {
+            System.err.println("INVALID EMPLOYEE ID");
+            ex.printStackTrace();
+        }
+
+        model.addAttribute("activeParts", activeParts);
+        redirectAttributes.addFlashAttribute("employeeCommand", employeeCommand);
+        redirectAttributes.addFlashAttribute("activeParts", activeParts);
         redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
-        redirectAttributes.addFlashAttribute("cartCommand", new CartCommand());
 
         if (partOrderMap.isEmpty()) {
-            for (Part part : partsFilteredBySupplier) {
+            for (Part part : activeParts) {
                 partOrderMap.put(part, 0);
             }
         }
@@ -117,7 +112,7 @@ public class ResupplyOrderController {
 
     /**Processes adding a part to the order*/
     @PostMapping("/orders/resupply/selectParts")
-    public String selectPartsPost(@ModelAttribute("command") SupplierCommand command,
+    public String selectPartsPost(@ModelAttribute("employeeCommand") EmployeeCommand employeeCommand,
                                   @ModelAttribute("partCommand") PartCommand partCommand,
                                   BindingResult bindingResult,
                                   Model model,
@@ -141,9 +136,9 @@ public class ResupplyOrderController {
         }
 
         updateOrderedItems();
-        redirectAttributes.addFlashAttribute("command", command);
+        redirectAttributes.addFlashAttribute("employeeCommand", employeeCommand);
         redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
-        model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
+        model.addAttribute("activeParts", activeParts);
         return "orders/resupply/selectParts";
     }
 
@@ -169,11 +164,11 @@ public class ResupplyOrderController {
 
         try {
             ResupplyOrder resupplyOrder = ResupplyOrder.createNew(
-                db.getEmployeeByID(1),
+                orderingEmployee,
                 getShippingFee(),
                 getOrderedItems(),
                 getOrderTaxAmount(),
-                null
+                null//fixme
             );
             db.saveToDatabase(resupplyOrder);
         }
@@ -192,12 +187,6 @@ public class ResupplyOrderController {
 
     @RequestMapping("orders/resupply/selectParts")
     public String selectParts(Model model) {
-        return "orders/resupply/selectParts";
-    }
-
-    @RequestMapping("orders/resupply/orderCart")
-    public String orderCart(Model model) {
-        model.addAttribute("cartCommand", new CartCommand());
         return "orders/resupply/selectParts";
     }
 
@@ -295,22 +284,6 @@ public class ResupplyOrderController {
         }
     }
 
-    /**For building the list of available vendors based on available Parts*/
-    private void buildSupplierList() {
-        buildPartList();
-        if (activeParts.isEmpty()) {
-            throw new EmptyListException(
-                "Parts List Empty when attempting to retrieve list of Vendors."
-            );
-        }
-        for (Part part : activeParts) {
-            String vendorName = part.getSupplier().getCompanyName();
-            if (!availableSuppliers.contains(vendorName)) {
-                availableSuppliers.add(vendorName);
-            }
-        }
-    }
-
     /**Creates a list of Parts filtered by Supplier*/
     private List<Part> getPartsBySupplier(String selectedSupplier) {
         List<Part> parts = new ArrayList<>();
@@ -330,22 +303,6 @@ public class ResupplyOrderController {
 
     public void setActiveParts(List<Part> activeParts) {
         this.activeParts = activeParts;
-    }
-
-    public List<String> getAvailableSuppliers() {
-        return availableSuppliers;
-    }
-
-    public void setAvailableSuppliers(List<String> availableSuppliers) {
-        this.availableSuppliers = availableSuppliers;
-    }
-
-    public List<Part> getPartsFilteredBySupplier() {
-        return partsFilteredBySupplier;
-    }
-
-    public void setPartsFilteredBySupplier(List<Part> partsFilteredBySupplier) {
-        this.partsFilteredBySupplier = partsFilteredBySupplier;
     }
 
     public void setPartOrderMap(Map<Part, Integer> partOrderMap) {
