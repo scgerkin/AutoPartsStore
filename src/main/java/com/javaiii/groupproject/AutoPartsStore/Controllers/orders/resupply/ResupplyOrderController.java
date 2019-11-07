@@ -56,6 +56,7 @@ public class ResupplyOrderController {
     private void init() {
         activeParts = new ArrayList<>();
         partOrderMap = new HashMap<>();
+        orderedItems = new HashMap<>();
         orderNotes = "";
     }
 
