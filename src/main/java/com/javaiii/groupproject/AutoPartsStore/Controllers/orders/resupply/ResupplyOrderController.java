@@ -28,7 +28,7 @@ public class ResupplyOrderController {
     private List<Part> activeParts;
     private List<String> availableSuppliers;
     private List<Part> partsFilteredBySupplier;
-    private Map<Integer, Integer> partIdQuantityMap;
+    private Map<Part, Integer> partOrderMap;
     private String orderNotes;
 
     // Constants for tax and shipping rates
@@ -52,7 +52,7 @@ public class ResupplyOrderController {
         activeParts = new ArrayList<>();
         availableSuppliers = new ArrayList<>();
         partsFilteredBySupplier = new ArrayList<>();
-        partIdQuantityMap = new HashMap<>();
+        partOrderMap = new HashMap<>();
         orderNotes = "";
     }
 
@@ -97,20 +97,20 @@ public class ResupplyOrderController {
         redirectAttributes.addFlashAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
         redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
         redirectAttributes.addFlashAttribute("cartCommand", new CartCommand());
-        redirectAttributes.addFlashAttribute("partIdQuantityMap", partIdQuantityMap);
-        partIdQuantityMap = new HashMap<>();
 
-        for (Part part : partsFilteredBySupplier) {
-            partIdQuantityMap.put(part.getPartID(), 0);
+        if (partOrderMap.isEmpty()) {
+            for (Part part : partsFilteredBySupplier) {
+                partOrderMap.put(part, 0);
+            }
         }
 
+        redirectAttributes.addFlashAttribute("partOrderMap", partOrderMap);
         return "redirect:/orders/resupply/selectParts";
     }
 
     @PostMapping("/orders/resupply/selectParts")
     public String selectPartsPost(@ModelAttribute("command") SupplierCommand command,
                                   @ModelAttribute("partCommand") PartCommand partCommand,
-                                  @ModelAttribute("cartCommand") CartCommand cartCommand,
                                   BindingResult bindingResult,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
@@ -120,19 +120,24 @@ public class ResupplyOrderController {
         }
         Integer partID = partCommand.getId();
         Integer quantity = partCommand.getQuantity();
+        System.out.println("PartID: " + partID + " quantity: " + quantity);
 
         if (quantity == null) {
             quantity = 0;
         }
 
-        partIdQuantityMap.put(partID, quantity);
+        for (Part part : partOrderMap.keySet()) {
+            if (part.getPartID().equals(partID)) {
+                partOrderMap.put(part, quantity);
+            }
+        }
+
 
         redirectAttributes.addFlashAttribute("command", command);
-        redirectAttributes.addFlashAttribute("partCommand", partCommand);
-        redirectAttributes.addFlashAttribute("cartCommand", cartCommand);
+        redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
         model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
 
-        System.out.println("Add part to order: ID " + partID + " quantity: " + quantity);
+
         return "orders/resupply/selectParts";
     }
 
@@ -146,8 +151,8 @@ public class ResupplyOrderController {
     @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=emptyCart")
     public String emptyCart(Model model) {
         System.out.println("EMPTY CART");
-        for (Integer key : partIdQuantityMap.keySet()) {
-            partIdQuantityMap.put(key, 0);
+        for (Part key : partOrderMap.keySet()) {
+            partOrderMap.put(key, 0);
         }
         return startResupplyOrder(model);
     }
@@ -168,25 +173,19 @@ public class ResupplyOrderController {
         return orderNotes;
     }
 
-    @ModelAttribute("partIdQuantityMap")
-    public Map<Integer, Integer> getPartIdQuantityMap() {
-        return partIdQuantityMap;
+    @ModelAttribute("partOrderMap")
+    public Map<Part, Integer> getPartOrderMap() {
+        return partOrderMap;
     }
 
     @ModelAttribute("getOrderedItems")
-    public Map<String, Integer> getOrderedItems() {
-        Map<String, Integer> orderedItems = new HashMap<>();
-        try {
-            for (Map.Entry<Integer, Integer> entry : partIdQuantityMap.entrySet()) {
-                Integer orderAmt = entry.getValue();
-                if (orderAmt.compareTo(0) > 0) {
-                    String itemName = db.getPartName(entry.getKey());
-                    orderedItems.put(itemName, orderAmt);
-                }
+    public Map<Part, Integer> getOrderedItems() {
+        Map<Part, Integer> orderedItems = new HashMap<>();
+        for (Map.Entry<Part, Integer> entry : partOrderMap.entrySet()) {
+            Integer orderAmt = entry.getValue();
+            if (orderAmt.compareTo(0) > 0) {
+                orderedItems.put(entry.getKey(), orderAmt);
             }
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
         }
         return orderedItems;
     }
@@ -200,7 +199,7 @@ public class ResupplyOrderController {
 
     @ModelAttribute("cartHasItems")
     public boolean cartHasItems() {
-        for (Integer quant: partIdQuantityMap.values()) {
+        for (Integer quant: partOrderMap.values()) {
             if (quant.compareTo(0) > 0) {
                 return true;
             }
@@ -272,8 +271,8 @@ public class ResupplyOrderController {
         this.partsFilteredBySupplier = partsFilteredBySupplier;
     }
 
-    public void setPartIdQuantityMap(Map<Integer, Integer> partIdQuantityMap) {
-        this.partIdQuantityMap = partIdQuantityMap;
+    public void setPartOrderMap(Map<Part, Integer> partOrderMap) {
+        this.partOrderMap = partOrderMap;
     }
 
     public void setOrderNotes(String orderNotes) {

@@ -21,38 +21,61 @@
                 <th>Quantity in Stock</th>
                 <th>Order</th>
             </tr>
-            <tr th:each="part : ${partsFilteredBySupplier}">
-                <td th:text="${part.category}">Category</td>
-                <td th:text="${part.partID}">ID</td>
-                <td th:text="${part.name}">Name</td>
-                <td th:text="${part.supplier.companyName}">Supplier</td>
-                <td th:text="${part.description}">Description</td>
-                <td th:text="${part.pricePerUnit}">Unit Price</td>
-                <td th:text="${part.quantityOnHand}">Quantity in Stock</td>
-                <!--For adding a part to an order-->
-                <td>
+
+            <tr th:each="entry : ${partOrderMap}">
                 <form id="addPartForm" action="#" th:action="@{/orders/resupply/selectParts}" th:object="${partCommand}" method="post">
-                    <input type="number" min="0" step="1" th:field="*{quantity}"/>
-                    <input type="hidden" th:value="${part.partID}" name="id"/>
-                    <input type="submit" value="Add to cart"/>
-                </form>
+                <td th:text="${entry.key.category}">Category</td>
+                <td th:text="${entry.key.partID}">ID</td>
+                <td th:text="${entry.key.name}">Name</td>
+                <td th:text="${entry.key.supplier.companyName}">Supplier</td>
+                <td th:text="${entry.key.description}">Description</td>
+                <td th:text="${entry.key.pricePerUnit}">Unit Price</td>
+                <td th:text="${entry.key.quantityOnHand}">Quantity in Stock</td>
+                <td>
+                    <input type="number" min="0" step="1"
+                           th:value="${entry.value}"
+                           name="quantity"/>
+                    <input type="hidden"
+                           th:value="${entry.key.partID}"
+                           name="id"/>
+                    <input type="submit" value="Add to Cart"/>
                 </td>
+                </form>
             </tr>
+
+
+
+
+<!--            <tr th:each="part : ${partsFilteredBySupplier}">-->
+<!--                <td th:text="${part.category}">Category</td>-->
+<!--                <td th:text="${part.partID}">ID</td>-->
+<!--                <td th:text="${part.name}">Name</td>-->
+<!--                <td th:text="${part.supplier.companyName}">Supplier</td>-->
+<!--                <td th:text="${part.description}">Description</td>-->
+<!--                <td th:text="${part.pricePerUnit}">Unit Price</td>-->
+<!--                <td th:text="${part.quantityOnHand}">Quantity in Stock</td>-->
+<!--                &lt;!&ndash;For adding a part to an order&ndash;&gt;-->
+<!--                <td>-->
+<!--                <form id="addPartForm" action="#" th:action="@{/orders/resupply/selectParts}" th:object="${partIdQuantityMap}" method="post">-->
+<!--                    <input type="number" min="0" step="1" th:field="*{quantity}"/>-->
+<!--                    <input type="hidden" th:value="${part}" name="part"/>-->
+<!--                    <input type="submit" value="Add to cart"/>-->
+<!--                </form>-->
+<!--                </td>-->
+<!--            </tr>-->
         </table>
-        <div th:if="${getOrderedItems}">
+        <div th:if="${cartHasItems}">
             <table>
                 <tr>
                     <th>Item</th>
                     <th>Quantity</th>
                 </tr>
                 <tr th:each="entry : ${getOrderedItems}">
-                    <td th:text="${entry.getKey()}">Item Name</td>
+                    <td th:text="${entry.key.name}">Item Name</td>
                     <td th:text="${entry.getValue()}">Quantity</td>
                 </tr>
             </table>
                 <form id="cartOptions" action="#" th:action="@{/orders/resupply/handleCart}" th:object="${cartCommand}" method="post">
-                <textarea th:field="*{notes}" value="${getOrderNotes}">Order Notes</textarea><br/>
-                Employee ID: <input type="text" th:field="*{employeeID}"/><br/>
                 <button type="submit" name="action" value="checkout">Checkout</button>
                 <button type="submit" name="action" value="emptyCart">Cancel Order</button>
                 </form>
