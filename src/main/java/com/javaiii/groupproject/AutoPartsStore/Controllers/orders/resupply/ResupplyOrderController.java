@@ -29,7 +29,7 @@ public class ResupplyOrderController {
     private List<String> availableSuppliers;
     private List<Part> partsFilteredBySupplier;
     private Map<Part, Integer> partOrderMap;
-    Map<Part, Integer> orderedItems;
+    private Map<Part, Integer> orderedItems;
 
     private String orderNotes;
 
@@ -37,8 +37,11 @@ public class ResupplyOrderController {
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
     private final BigDecimal FLAT_SHIPPING_FEE = new BigDecimal(10.00);
 
-
-    /**Default constructor connects to the database only*/
+    /**
+     * Default constructor.
+     * Connects to the database and initializes the lists and maps we are going
+     * to use for orders.
+     */
     public ResupplyOrderController() {
         connect();
         init();
@@ -110,6 +113,7 @@ public class ResupplyOrderController {
         return "redirect:/orders/resupply/selectParts";
     }
 
+    /**Processes adding a part to the order*/
     @PostMapping("/orders/resupply/selectParts")
     public String selectPartsPost(@ModelAttribute("command") SupplierCommand command,
                                   @ModelAttribute("partCommand") PartCommand partCommand,
@@ -135,12 +139,9 @@ public class ResupplyOrderController {
         }
 
         updateOrderedItems();
-
         redirectAttributes.addFlashAttribute("command", command);
         redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
         model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
-
-
         return "orders/resupply/selectParts";
     }
 

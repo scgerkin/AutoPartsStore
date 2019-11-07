@@ -1,55 +1,70 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>Resupply Order</title>
-    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
-    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Resupply Order</title>
+  <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+  <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
 <div class="container">
-    <h1>Select the parts to order</h1>
-    <div th:if="${partsFilteredBySupplier}">
-        <table>
-            <tr>
-                <th>Category</th>
-                <th>Part ID</th>
-                <th>Name</th>
-                <th>Supplier</th>
-                <th>Description</th>
-                <th>Unit Price</th>
-                <th>Quantity in Stock</th>
-                <th>Order</th>
-            </tr>
+  <h1>Select the parts to order</h1>
+  <div th:if="${partsFilteredBySupplier}">
+    <table>
+      <tr>
+        <th>Category</th>
+        <th>Part ID</th>
+        <th>Name</th>
+        <th>Supplier</th>
+        <th>Description</th>
+        <th>Unit Price</th>
+        <th>Quantity in Stock</th>
+        <th>Order</th>
+      </tr>
+      <!-- Display each part that can be ordered-->
+      <tr th:each="entry : ${partOrderMap}">
+        <!--
+        Essentially, this creates a new form for each part to update individual order items
+        It works by using a PartCommand object to store the part ID of a part we are ordering
+        and the quantity. PartCommand DTO is used to talk to the Controller and inform it of
+        an update with the quantity. The values in the number box are retrieved using the map
+        that we get from the foreach loop Thymeleaf runs.
+        The syntax of the form control items below are ridiculously unintuitive but get the
+        current map entry value for the number field and the part ID from the current entry key.
+        These are then passed to the DTO on submission.
+        -->
+        <form id="addPartForm"
+              action="#" th:action="@{/orders/resupply/selectParts}"
+              th:object="${partCommand}"
+              method="post">
+          <td th:text="${entry.key.category}">Category</td>
+          <td th:text="${entry.key.partID}">ID</td>
+          <td th:text="${entry.key.name}">Name</td>
+          <td th:text="${entry.key.supplier.companyName}">Supplier</td>
+          <td th:text="${entry.key.description}">Description</td>
+          <td th:text="${entry.key.pricePerUnit}">Unit Price</td>
+          <td th:text="${entry.key.quantityOnHand}">Quantity in Stock</td>
 
-            <tr th:each="entry : ${partOrderMap}">
-                <form id="addPartForm" action="#" th:action="@{/orders/resupply/selectParts}" th:object="${partCommand}" method="post">
-                <td th:text="${entry.key.category}">Category</td>
-                <td th:text="${entry.key.partID}">ID</td>
-                <td th:text="${entry.key.name}">Name</td>
-                <td th:text="${entry.key.supplier.companyName}">Supplier</td>
-                <td th:text="${entry.key.description}">Description</td>
-                <td th:text="${entry.key.pricePerUnit}">Unit Price</td>
-                <td th:text="${entry.key.quantityOnHand}">Quantity in Stock</td>
-                <td>
-                    <input type="number" min="0" step="1"
-                           th:value="${entry.value}"
-                           name="quantity"/>
-                    <input type="hidden"
-                           th:value="${entry.key.partID}"
-                           name="id"/>
-                </td>
-                <td><input type="submit" value="Update Order"/></td>
-                </form>
-            </tr>
-        </table>
-        <div>
-            <form id="cartOptions" action="#" th:action="@{/orders/resupply/handleCart}" th:object="${cartCommand}" method="post">
-            <button type="submit" name="action" value="confirmOrder">Confirm Order</button>
-            <button type="submit" name="action" value="cancelOrder">Cancel Order</button>
-            </form>
-        </div>
+          <td>
+            <input type="number" min="0" step="1"
+                   th:value="${entry.value}"
+                   name="quantity"/>
+            <input type="hidden"
+                   th:value="${entry.key.partID}"
+                   name="id"/>
+          </td>
+          <td><input type="submit" value="Update Order"/></td>
+        </form>
+      </tr>
+    </table>
+    <div>
+      <form id="cartOptions" action="#" th:action="@{/orders/resupply/handleCart}" th:object="${cartCommand}"
+            method="post">
+        <button type="submit" name="action" value="confirmOrder">Confirm Order</button>
+        <button type="submit" name="action" value="cancelOrder">Cancel Order</button>
+      </form>
     </div>
+  </div>
 </div>
 </body>
 </html>
