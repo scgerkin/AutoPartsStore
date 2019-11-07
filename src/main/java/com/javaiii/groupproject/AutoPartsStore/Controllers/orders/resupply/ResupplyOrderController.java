@@ -29,6 +29,8 @@ public class ResupplyOrderController {
     private List<String> availableSuppliers;
     private List<Part> partsFilteredBySupplier;
     private Map<Part, Integer> partOrderMap;
+    Map<Part, Integer> orderedItems;
+
     private String orderNotes;
 
     // Constants for tax and shipping rates
@@ -132,6 +134,7 @@ public class ResupplyOrderController {
             }
         }
 
+        updateOrderedItems();
 
         redirectAttributes.addFlashAttribute("command", command);
         redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
@@ -141,20 +144,20 @@ public class ResupplyOrderController {
         return "orders/resupply/selectParts";
     }
 
-    @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=checkout")
+    @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=confirmOrder")
     public ModelAndView checkout() {
-        System.out.println("CHECKOUT");
-        ModelAndView modelAndView = new ModelAndView("/orders/resupply/checkout.html");
+        System.out.println("CONFIRM ORDER");
+        ModelAndView modelAndView = new ModelAndView("/orders/resupply/confirmOrder.html");
         return modelAndView;
     }
 
-    @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=emptyCart")
+    @RequestMapping(value="/orders/resupply/handleCart", method=RequestMethod.POST, params="action=cancelOrder")
     public String emptyCart(Model model) {
-        System.out.println("EMPTY CART");
+        System.out.println("CANCEL ORDER");
         for (Part key : partOrderMap.keySet()) {
             partOrderMap.put(key, 0);
         }
-        return startResupplyOrder(model);
+        return "index";
     }
 
     @RequestMapping("orders/resupply/selectParts")
@@ -180,21 +183,8 @@ public class ResupplyOrderController {
 
     @ModelAttribute("getOrderedItems")
     public Map<Part, Integer> getOrderedItems() {
-        Map<Part, Integer> orderedItems = new HashMap<>();
-        for (Map.Entry<Part, Integer> entry : partOrderMap.entrySet()) {
-            Integer orderAmt = entry.getValue();
-            if (orderAmt.compareTo(0) > 0) {
-                orderedItems.put(entry.getKey(), orderAmt);
-            }
-        }
+        updateOrderedItems();
         return orderedItems;
-    }
-
-    @RequestMapping("orders/resupply/getNumOrdered")
-    public Integer getNumOrdered(Integer partID) {
-        System.out.println("getNumOrdered called:");
-        System.out.println("PartID: " + partID);
-        return 5;
     }
 
     @ModelAttribute("cartHasItems")
@@ -207,6 +197,16 @@ public class ResupplyOrderController {
         return false;
     }
 
+    /**Updates the list of ordered items with the quantity*/
+    private void updateOrderedItems() {
+        orderedItems = new HashMap<>();
+        for (Map.Entry<Part, Integer> entry : partOrderMap.entrySet()) {
+            Integer orderAmt = entry.getValue();
+            if (orderAmt.compareTo(0) > 0) {
+                orderedItems.put(entry.getKey(), orderAmt);
+            }
+        }
+    }
 
     /**For building the list of currently not discontinued Parts*/
     private void buildPartList() {
