@@ -4,6 +4,7 @@ import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
 import com.javaiii.groupproject.AutoPartsStore.Models.people.Employee;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.command.CartCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.PartCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.ResupplyOrderCommand;
 import com.javaiii.groupproject.AutoPartsStore.command.SupplierCommand;
@@ -15,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
@@ -33,7 +35,7 @@ public class ResupplyOrderController {
     private List<String> availableSuppliers = new ArrayList<>();
     private List<Part> partsFilteredBySupplier = new ArrayList<>();
     private Map<Integer, Integer> partIdQuantityMap;
-
+    private String orderNotes;
 
     // Constants for tax and shipping rates
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
@@ -54,7 +56,7 @@ public class ResupplyOrderController {
     private List<Part> partsSelectedByVendor = new ArrayList<>();
     private String errorMsg;
     private String orderEmployeeEmail;
-    private String orderNotes;
+
     private String selectedVendor;
 
     /**Default constructor connects to the database only*/
@@ -104,27 +106,76 @@ public class ResupplyOrderController {
         model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
         redirectAttributes.addFlashAttribute("command", command);
         redirectAttributes.addFlashAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
+        redirectAttributes.addFlashAttribute("partCommand", new PartCommand());
+        redirectAttributes.addFlashAttribute("cartCommand", new CartCommand());
+        redirectAttributes.addFlashAttribute("partIdQuantityMap", partIdQuantityMap);
+        partIdQuantityMap = new HashMap<>();
+
+        for (Part part : partsFilteredBySupplier) {
+            partIdQuantityMap.put(part.getPartID(), 0);
+        }
+
         return "redirect:/orders/resupply/selectParts";
     }
 
-    @RequestMapping("orders/resupply/selectParts")
-    public String selectParts(Model model) {
-        model.addAttribute("partCommand", new PartCommand());
-        partIdQuantityMap = new HashMap<>();
-        return "orders/resupply/selectParts";
-    }
-
     @PostMapping("/orders/resupply/selectParts")
-    public void selectPartsPost(@ModelAttribute("partCommand") PartCommand partCommand,
-                                  BindingResult bindingResult) {
+    public String selectPartsPost(@ModelAttribute("command") SupplierCommand command,
+                                  @ModelAttribute("partCommand") PartCommand partCommand,
+                                  @ModelAttribute("cartCommand") CartCommand cartCommand,
+                                  BindingResult bindingResult,
+                                  Model model,
+                                  RedirectAttributes redirectAttributes) {
         System.out.println("Part addition submission");
         if (bindingResult.hasErrors()) {
             System.out.println("Binding Result has errors");
         }
         Integer partID = partCommand.getId();
         Integer quantity = partCommand.getQuantity();
+
         partIdQuantityMap.put(partID, quantity);
+
+        redirectAttributes.addFlashAttribute("command", command);
+        redirectAttributes.addFlashAttribute("partCommand", partCommand);
+        redirectAttributes.addFlashAttribute("cartCommand", cartCommand);
+        model.addAttribute("partsFilteredBySupplier", partsFilteredBySupplier);
+
         System.out.println("Add part to order: ID " + partID + " quantity: " + quantity);
+        return "orders/resupply/selectParts";
+    }
+
+    @RequestMapping("orders/resupply/selectParts")
+    public String selectParts(Model model) {
+        return "orders/resupply/selectParts";
+    }
+
+    @RequestMapping("orders/resupply/orderCart")
+    public String orderCart(Model model) {
+        model.addAttribute("cartCommand", new CartCommand());
+        return "orders/resupply/selectParts";
+    }
+
+    @ModelAttribute("getOrderNotes")
+    public String getOrderNotes() {
+        return orderNotes;
+    }
+
+    @ModelAttribute("partIdQuantityMap")
+    public Map<Integer, Integer> getPartIdQuantityMap() {
+        return partIdQuantityMap;
+    }
+
+    @RequestMapping("/orders/resuppy/checkout")
+    public String checkout() {
+        return "/";
+    }
+
+
+
+    @RequestMapping("orders/resupply/getNumOrdered")
+    public Integer getNumOrdered(Integer partID) {
+        System.out.println("getNumOrdered called:");
+        System.out.println("PartID: " + partID);
+        return 5;
     }
 
     /**For building the list of currently not discontinued Parts*/
@@ -334,6 +385,12 @@ public class ResupplyOrderController {
         return msg;
     }
 
+
+
+    public void setPartIdQuantityMap(Map<Integer, Integer> partIdQuantityMap) {
+        this.partIdQuantityMap = partIdQuantityMap;
+    }
+
     public BigDecimal getSALES_TAX_RATE() {
         return SALES_TAX_RATE;
     }
@@ -452,10 +509,6 @@ public class ResupplyOrderController {
 
     public void setOrderEmployeeEmail(String orderEmployeeEmail) {
         this.orderEmployeeEmail = orderEmployeeEmail;
-    }
-
-    public String getOrderNotes() {
-        return orderNotes;
     }
 
     public void setOrderNotes(String orderNotes) {
