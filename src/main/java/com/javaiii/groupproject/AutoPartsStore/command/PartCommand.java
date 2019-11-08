@@ -1,5 +1,6 @@
 package com.javaiii.groupproject.AutoPartsStore.command;
 
+//todo this should probably be renamed
 public class PartCommand {
     Integer id;
     Integer quantity;
