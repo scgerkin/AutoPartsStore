@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory</title>
+  <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+  <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <h1>Inventory List</h1>
+  <a th:href="@{/inventory/addPart}">Add a new part</a><br/><!--Add href-->
+  <a th:href="@{/}">Return to main menu</a><!--Add href-->
+  <div th:if="${inventory.isEmpty()}">
+    Error retrieving inventory list from database.
+  </div>
+  <div th:unless="${inventory.isEmpty()}">
+    <table class="table">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Number In Stock</th>
+        <th>Discontinued?</th>
+        <th></th>
+      </tr>
+      <tr th:each="part : ${inventory}">
+        <form id="changePartStatus" action="#" th:action="@{/inventory/inventoryList}" th:object="${parIdCommand}"
+              method="post">
+          <td th:text="${part.partID}">ID</td>
+          <td th:text="${part.name}">Name</td>
+          <td th:text="${part.category}">Category</td>
+          <td th:text="${part.quantityOnHand}">Number In Stock</td>
+          <td th:text="${part.discontinued}">Discontinued?</td>
+          <td>
+            <input type="hidden" th:value="${part.partID}" name="id"/>
+            <button type="submit" action="action" value="changeStatus">Change status</button>
+          </td>
+        </form>
+      </tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>
