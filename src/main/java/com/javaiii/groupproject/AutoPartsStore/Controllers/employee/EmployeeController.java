@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -81,7 +80,7 @@ public class EmployeeController {
         }
 
         try {
-            Employee employee = cmd.unpack();
+            Employee employee = cmd.unpackExisting();
             db.saveToDatabase(employee);
             buildEmployeeList();
         }
@@ -99,22 +98,36 @@ public class EmployeeController {
         return "employees/updateSuccess";
     }
 
+    @RequestMapping(value="/employees/addEmployee")
+    public String initAddEmployeeDisplay(Model model) {
+        model.addAttribute("employee", new EditEmployeeCommand());
+        return "employees/addEmployee";
+    }
 
+    @PostMapping(value="/employees/addEmployee")
+    public String postAddEmployee(@ModelAttribute("employee") EditEmployeeCommand cmd,
+                                  BindingResult bindingResult,
+                                  Model model,
+                                  RedirectAttributes redirectAttributes) {
 
+        try {
+            Employee employee = cmd.unpackNew();
+            db.saveToDatabase(employee);
+            buildEmployeeList();
+        }
+        catch (SQLException ex) {
+            System.err.println("Error writing new employee to database");
+            ex.printStackTrace();
+            return "errors/databaseError";
+        }
 
-
-
-
-
-
-
+        return "employees/updateSuccess";
+    }
 
     @ModelAttribute("employeeList")
     public List<Employee> getEmployeeList() {
         return employeeList;
     }
-
-
 
     private void connect() {
         db = new DatabaseManager(true);

@@ -36,10 +36,19 @@ public class EditEmployeeCommand {
         this.notes = employee.getNotes();
     }
 
-    public Employee unpack() {
+    public Employee unpackExisting() {
         Address address = new Address(street, city, state, zipCode);
 
         return Employee.createExisting(idNumber, lastName, firstName, email,
             primaryPhone, secondaryPhone, address, notes, title);
+    }
+
+    public Employee unpackNew() {
+        Address address = new Address(street, city, state, zipCode);
+
+        secondaryPhone = (secondaryPhone.isEmpty()) ? null : secondaryPhone;
+
+        return Employee.createNew(lastName, firstName, email, primaryPhone,
+            secondaryPhone, address, notes, title);
     }
 }
