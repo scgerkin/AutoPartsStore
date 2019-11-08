@@ -9,6 +9,14 @@
 <body>
 <div class="container">
   <h1>Add new part</h1>
+  <form about="#" th:action="@{/inventory/addPart}" th:object="${createPartCommand}" method="post">
+    Enter Part Name: <input type="text" th:field="*{name}"/><br/>
+    Enter Category: <input type="text" th:field="*{category}"/><br/>
+    Enter Price: <input type="number" min="0" step="0.01" th:field="*{pricePerUnit}"/><br/>
+    Enter Quantity on Hand: <input type="number" min="0" step="1" th:field="*{quantityOnHand}"/><br/>
+    Enter Description:<br/><textarea th:field="*{description}"></textarea><br/>
+    <input type="submit" value="Add Part" /><input type="reset" value="Clear"/>
+  </form>
 </div>
 </body>
 </html>
