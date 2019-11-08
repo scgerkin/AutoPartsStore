@@ -40,7 +40,7 @@ import java.util.Map;
 @Controller
 public class CustomerOrderController {
 
-    DatabaseManager db;
+    private static DatabaseManager db;
 
     // the customer who is placing the order
     private Customer orderingCustomer;
@@ -75,13 +75,11 @@ public class CustomerOrderController {
      * I'm not messing with it for right now, though.
      */
     public CustomerOrderController() {
-        connect();
         init();
     }
 
-    /**Creates a new DatabaseManager object to set the connection*/
-    private void connect() {
-        db = new DatabaseManager(false);
+    public static void setDb(DatabaseManager databaseManager) {
+        db = databaseManager;
     }
 
     /**Initializes the list and map items we will use for an order*/
@@ -98,7 +96,6 @@ public class CustomerOrderController {
      */
     @RequestMapping("/orders/customer/startCustomerOrder")
     public String startCustomerOrder(Model model) {
-        connect();
         init();
         model.addAttribute("customerCommand", new IdCommand());
         return "orders/customer/startCustomerOrder";

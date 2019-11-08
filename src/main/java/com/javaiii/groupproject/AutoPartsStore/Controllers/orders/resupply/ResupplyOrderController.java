@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
@@ -26,7 +25,7 @@ import java.util.Map;
 @Controller
 public class ResupplyOrderController {
 
-    DatabaseManager db;
+    private static DatabaseManager db;
 
     private Employee orderingEmployee;
     private List<Part> activeParts;
@@ -44,13 +43,11 @@ public class ResupplyOrderController {
      * to use for orders.
      */
     public ResupplyOrderController() {
-        connect();
         init();
     }
 
-    /**Initializes a connection to the database*/
-    private void connect() {
-        db = new DatabaseManager(false);
+    public static void setDb(DatabaseManager databaseManager) {
+        db = databaseManager;
     }
 
     /**Reset all member variables when we come to a Resupply*/
@@ -64,7 +61,6 @@ public class ResupplyOrderController {
     /**For setting the Command object we will use for resupply orders*/
     @RequestMapping("/orders/resupply/startResupplyOrder")
     public String startResupplyOrder(Model model) {
-        connect();
         init();
         model.addAttribute("employeeCommand", new IdCommand());
         return "orders/resupply/startResupplyOrder";

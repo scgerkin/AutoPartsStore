@@ -19,11 +19,10 @@ import java.util.List;
 @Controller
 public class SupplierController {
 
-    private DatabaseManager db;
+    private static DatabaseManager db;
     private List<Supplier> supplierList;
 
     public SupplierController() {
-        connect();
         init();
     }
 
@@ -177,9 +176,8 @@ public class SupplierController {
         return supplierList;
     }
 
-    /**Initializes a new connection to the database*/
-    private void connect() {
-        db = new DatabaseManager(false);
+    public static void setDb(DatabaseManager databaseManager) {
+        db = databaseManager;
     }
 
     /**Initializes the objects the controller is to work with*/
@@ -189,7 +187,6 @@ public class SupplierController {
 
     /**Builds the list of suppliers from the database*/
     private void buildSupplierList() {
-        connect();
         try {
             supplierList = db.getAllSuppliers();
         }

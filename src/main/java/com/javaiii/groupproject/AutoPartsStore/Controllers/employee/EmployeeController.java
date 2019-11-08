@@ -19,12 +19,11 @@ import java.util.List;
 @Controller
 public class EmployeeController {
 
-    private DatabaseManager db;
+    private static DatabaseManager db;
 
     private List<Employee> employeeList;
 
     public EmployeeController() {
-        connect();
         init();
     }
 
@@ -137,8 +136,8 @@ public class EmployeeController {
         return employeeList;
     }
 
-    private void connect() {
-        db = new DatabaseManager(false);
+    public static void setDb(DatabaseManager databaseManager) {
+        db = databaseManager;
     }
 
     private void init() {
@@ -147,7 +146,6 @@ public class EmployeeController {
     }
 
     private void buildEmployeeList() {
-        connect();
         try {
             employeeList = db.getAllEmployees();
         }

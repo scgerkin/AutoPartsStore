@@ -21,18 +21,17 @@ import java.util.List;
 @Controller
 public class InventoryController {
 
-    private DatabaseManager db;
+    private static DatabaseManager db;
     List<Part> inventory;
 
 
 
     public InventoryController() {
-        connect();
         init();
     }
 
-    private void connect() {
-        db = new DatabaseManager(false);
+    public static void setDb(DatabaseManager databaseManager) {
+        db = databaseManager;
     }
 
     private void init() {
@@ -42,7 +41,6 @@ public class InventoryController {
 
     @RequestMapping(value="/inventory/inventoryList")
     public String initInventoryDisplay(Model model) {
-        connect();
         init();
         model.addAttribute("partIdCommand", new IdCommand());
         return "inventory/inventoryList";
@@ -51,7 +49,6 @@ public class InventoryController {
     @PostMapping(value="/inventory/inventoryList")
     public String togglePartStatus(@ModelAttribute("partIdCommand") IdCommand id, Model model) {
         try {
-            connect();
             togglePartStatus(id.getId());
         }
         catch (SQLException ex) {
@@ -75,7 +72,6 @@ public class InventoryController {
                               Model model,
                               RedirectAttributes redirectAttributes) {
         try {
-            connect();
             Supplier supplier = db.retrieveSupplierByID(1);
             Car car = db.retrieveCarConfigByID(1);
             Part part = Part.createNew(supplier, car, cmd.name, cmd.description, cmd.category,

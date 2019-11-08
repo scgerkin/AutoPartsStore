@@ -30,8 +30,8 @@ public class DATest {
     public static DatabaseManager db;
     public static Address testAddress;
 
-    public static void main(String[] args) throws Exception {
-        db = new DatabaseManager(false);
+    private static void main(String[] args) throws Exception {
+        db = new DatabaseManager();
         testAddress = new Address("123 test", "TestCity", "GA", "99999");
         System.out.println("MAKE SURE DATABASE HAS BEEN CLEANED" +
                                " AND RESET BEFORE RUNNING TESTS OR THEY WILL ALWAYS FAIL!");
