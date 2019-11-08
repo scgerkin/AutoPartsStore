@@ -126,6 +126,7 @@ public class EmployeeController {
 
     @ModelAttribute("employeeList")
     public List<Employee> getEmployeeList() {
+        buildEmployeeList();
         return employeeList;
     }
 
