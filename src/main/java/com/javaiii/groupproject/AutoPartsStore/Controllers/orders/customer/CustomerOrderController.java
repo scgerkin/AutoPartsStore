@@ -1,6 +1,7 @@
 package com.javaiii.groupproject.AutoPartsStore.Controllers.orders.customer;
 
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
+import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 import com.javaiii.groupproject.AutoPartsStore.Models.address.ShippingAddress;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.ShippingProvider;
 import com.javaiii.groupproject.AutoPartsStore.Models.orders.CustomerOrder;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -102,6 +104,10 @@ public class CustomerOrderController {
         return "orders/customer/startCustomerOrder";
     }
 
+    @RequestMapping("/orders/customer/selectParts")
+    public String selectPartsGet() {
+        return "orders/customer/selectParts";
+    }
 
     /**Handles entering a Customer ID number and redirects to part ordering page*/
     @PostMapping("/orders/customer/startCustomerOrder")
@@ -143,6 +149,12 @@ public class CustomerOrderController {
         if (partOrderMap.isEmpty()) {
             for (Part part : activeParts) {
                 partOrderMap.put(part, 0);
+
+                // apply markup
+                BigDecimal unitPrice = part.getPricePerUnit();
+                unitPrice = unitPrice.multiply(getFlatMarkupRate().add(new BigDecimal(1)));
+                unitPrice = unitPrice.setScale(2, RoundingMode.HALF_UP);
+                part.setPricePerUnit(unitPrice);
             }
         }
 
@@ -166,6 +178,7 @@ public class CustomerOrderController {
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
         System.out.println("Part addition submission");
+        System.out.println("Active part list size: " + activeParts.size());
         if (bindingResult.hasErrors()) {
             System.err.println("Binding Result has errors");
         }
@@ -211,7 +224,8 @@ public class CustomerOrderController {
      * a ShippingAddress that will be set on the next page.
      */
     @RequestMapping(value="/orders/customer/handleCart", method= RequestMethod.POST, params="action=confirmOrder")
-    public String confirmOrder(RedirectAttributes redirectAttributes) {
+    public String confirmOrder(@ModelAttribute("shippingAddressCommand")ShippingAddressCommand shippingAddressCommand,
+                               RedirectAttributes redirectAttributes) {
         System.out.println("CONFIRM ORDER");
         redirectAttributes.addFlashAttribute("shippingAddressCommand", new ShippingAddressCommand());
         return "orders/customer/confirmOrder";
@@ -247,7 +261,13 @@ public class CustomerOrderController {
         // get the shipping address entered by the customer if there was one
         ShippingAddress shippingAddress = null;
         if (shippingAddressCommand.isDifferentFromCustomer()) {
-            shippingAddress = shippingAddressCommand.getShippingAddress();
+            Address address = new Address(
+                shippingAddressCommand.getStreet(),
+                shippingAddressCommand.getCity(),
+                shippingAddressCommand.getState(),
+                shippingAddressCommand.getZip()
+            );
+            shippingAddress = new ShippingAddress(shippingAddressCommand.getName(), address);
             System.out.println("Shipping Address:\n" + shippingAddress.toString());
         }
 
@@ -288,6 +308,28 @@ public class CustomerOrderController {
             return CustomerOrder.createNew(orderingCustomer, shippingAddress, shippingProvider,
                 getShippingFee(),getOrderedItems(),getOrderTaxAmount(),null);
         }
+    }
+
+    @ModelAttribute("partOrderMap")
+    public Map<Part, Integer> getPartOrderMap() {
+        return partOrderMap;
+    }
+
+    /**
+     * This checks each part in the order map for a quantity. If it is greater
+     * that 0, we have parts in our order and this will return true.
+     * This might be doing too much, I think it may be able to just check
+     * if orderedItems has anything in it after updating it.
+     * As with most other things, it works so I'm not messing with it for now.
+     */
+    @ModelAttribute("orderHasItems")
+    public boolean orderHasItems() {
+        for (Integer quantity : partOrderMap.values()) {
+            if (quantity.compareTo(0) > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**For building the list of currently not discontinued Parts*/

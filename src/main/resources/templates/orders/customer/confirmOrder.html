@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirm Order</title>
+  <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+  <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <div th:unless="${orderHasItems}">
+    <h1>Empty Cart</h1>
+    <a href="/orders/customer/startCustomerOrder">Return to order page</a>
+  </div>
+  <div th:if="${orderHasItems}">
+    <h1>Order Confirmation</h1>
+    <table>
+      <tr>
+        <td>Part</td>
+        <td>Unit Price</td>
+        <td>Quantity</td>
+        <td>Total Cost</td>
+      </tr>
+      <tr th:each="entry : ${getOrderedItems}">
+        <td th:text="${entry.key.name}">Part</td>
+        <td th:text="${entry.key.pricePerUnit}">Unit Price</td>
+        <td th:text="${entry.value}">Quantity</td>
+        <!--Set the total cost per part using Thymeleaf Arithmetic-->
+        <span th:with="result=${entry.value * entry.key.pricePerUnit}">
+          <td th:text="result">Total Cost</td>
+        </span>
+      </tr>
+    </table>
+  </div>
+  <div id="orderTotal">
+    <p>
+      Subtotal: <span th:text="${getOrderSubtotalCost}"/><br/>
+      Tax Amount: <span th:text="${getOrderTaxAmount}"/><br/>
+      Shipping Fee: <span th:text="${getShippingFee}"/><br/>
+      <strong>Total order cost: <span th:text="${getOrderTotalCost}"/></strong>
+    </p>
+  </div>
+  <div id="shippingAddress">
+    <form id="orderConfirmation"
+          action="#"
+          th:action="@{/orders/customer/placeOrder}"
+          th:object="${shippingAddressCommand}"
+          method="post">
+      <div>
+        Use shipping address on file?<br/>
+        <ul>
+          <li>
+            <input type="radio"
+                   th:field="*{differentFromCustomer}"
+                   th:value="false"
+                   checked/>
+            <label>Yes</label>
+          </li>
+          <li>
+            <input type="radio"
+                   th:field="*{differentFromCustomer}"
+                   th:value="true"/>
+            <label>Ship somewhere else</label>
+          </li>
+        </ul>
+      </div>
+      <div id="shippingAddressEntry">
+        <!--This needs significant modification to validate input based on DB Requirements-->
+        Name: <input type="text" th:field="*{name}"/><br/>
+        Street: <input type="text" th:field="*{street}"/><br/>
+        City: <input type="text" th:field="*{city}"/><br/>
+        State: <input type="text" th:field="*{state}"/><br/>
+        Zip: <input type="text" th:field="*{zip}"/><br/>
+      </div>
+      <div class="buttons-hbox">
+        <button type="submit" name="action" value="placeOrder">Place Order</button>
+        <button type="submit" name="action" value="cancelOrder">Cancel order</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
