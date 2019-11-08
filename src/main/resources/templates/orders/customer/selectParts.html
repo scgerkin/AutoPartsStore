@@ -46,7 +46,7 @@
           <td th:text="${entry.key.quantityOnHand}">Quantity in Stock</td>
 
           <td>
-            <input type="number" min="0" step="1"
+            <input type="number" min="0" step="1" th:max="${entry.key.quantityOnHand}"
                    th:value="${entry.value}"
                    name="quantity"/>
             <input type="hidden"
