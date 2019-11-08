@@ -7,6 +7,23 @@
   <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
-
+<div class="container">
+  <h1>Edit Supplier</h1>
+  <form action="#" th:action="@{/suppliers/editSupplier}" th:object="${supplier}" method="post">
+    ID: <span th:text="*{idNumber}"></span><br/>
+    <input type="hidden" th:value="${supplier.businessId}" name="businessId"/>
+    Company Name: <input type="text" th:field="*{companyName}" required="required"/><br/>
+    Contact Person: <input type="text" th:field="*{contactPerson}"/><br/>
+    Primary Phone: <input type="tel" th:field="*{primaryPhone}" minlength="10" maxlength="10" required="required"/><br/>
+    Secondary Phone: <input type="tel" th:field="*{secondaryPhone}" minlength="10" maxlength="10"/><br/>
+    Address:<br/>
+    Street: <input type="text" th:field="*{street}" required="required"/><br/>
+    City: <input type="text" th:field="*{city}" required="required"/><br/>
+    State: <input type="text" th:field="*{state}" required="required" minlength="2" maxlength="2"/><br/>
+    ZipCode <input type="text" th:field="*{zipCode}" required="required" minlength="10" maxlength="10"/><br/>
+    Notes: <textarea th:field="*{notes}"></textarea><br/>
+    <input type="submit" value="Add Supplier"/><input type="reset" value="Reset"/>
+  </form>
+</div>
 </body>
 </html>

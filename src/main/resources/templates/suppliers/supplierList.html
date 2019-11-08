@@ -7,6 +7,44 @@
   <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
-
+<div class="container">
+  <h1>Supplier List</h1>
+  <a th:href="@{/suppliers/addSupplier}">Add a new Supplier</a><br/>
+  <a th:href="@{/}">Return to Main</a>
+  <table class="table">
+    <tr>
+      <th>ID Number</th>
+      <th>Company Name</th>
+      <th>Contact Person</th>
+      <th>Phone</th>
+      <th>Website</th>
+      <th>Address</th>
+      <th>Notes</th>
+      <th><!--Form button--></th>
+    </tr>
+    <tr th:each="supplier : ${supplierList}">
+      <form action="#" th:action="@{/suppliers/supplierList}" th:object="${supplierIdCommand}" method="post">
+        <td th:text="${supplier.businessID}">ID Number</td>
+        <td th:text="${supplier.companyName}">Company Name</td>
+        <td th:text="${supplier.contactName}">Contact Person</td>
+        <td>
+          Primary: <span th:text="${supplier.primaryPhone}"></span><br/>
+          <div class="no-gutter" th:if="${supplier.secondaryPhone}">
+            Secondary: <span th:text="${supplier.secondaryPhone}"></span>
+          </div>
+        </td>
+        <td th:text="${supplier.website}">Website</td>
+        <td class="multiline-text">
+          <span th:text="${supplier.address.toString()}"></span>
+        </td>
+        <td th:text="${supplier.notes}">Notes</td>
+        <td>
+          <input type="hidden" th:value="${supplier.businessID}" name="id"/>
+          <input type="submit" value="Edit"/>
+        </td>
+      </form>
+    </tr>
+  </table>
+</div>
 </body>
 </html>
