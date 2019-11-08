@@ -337,9 +337,12 @@ public class CustomerOrderController {
         try {
             activeParts = db.getAllActiveParts();
 
+            // grab a copy
+            List<Part> temp = new ArrayList<>(activeParts);
+
             // remove parts that have no stock on hand
             // todo test this, not sure if it works as intended
-            for (Part part : activeParts) {
+            for (Part part : temp) {
                 if (part.getQuantityOnHand().compareTo(0) <= 0) {
                     activeParts.remove(part);
                 }
