@@ -9,6 +9,7 @@
 <body>
 <div class="container">
   <h1>Employee List</h1>
+  <a th:href="@{/employees/addEmployee}">Add a new Employee</a>
   <table class="table">
     <tr>
       <th>ID Number</th>
@@ -22,7 +23,7 @@
       <th><!--Empty for edit button--></th>
     </tr>
     <tr th:each="employee : ${employeeList}">
-      <form action="#" th:action="@{/employees/editEmployee}" th:object="${employeeIdCommand}" method="post">
+      <form action="#" th:action="@{/employees/employeeList}" th:object="${employeeIdCommand}" method="post">
         <td th:text="${employee.idNumber}">ID Number</td>
         <td th:text="${employee.lastName}">Last Name</td>
         <td th:text="${employee.firstName}">First Name</td>

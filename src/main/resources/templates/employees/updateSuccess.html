@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Employee Update Success</title>
@@ -9,6 +9,8 @@
 <body>
 <div class="container">
   <h1>Employee Update Success</h1>
+  <a th:href="@{/employees/employeeList}">Return to Employee List</a><br/>
+  <a th:href="@{/}">Return to main</a>
 </div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Edit Employee</title>
@@ -9,6 +9,21 @@
 <body>
 <div class="container">
   <h1>Edit Employee</h1>
+  <form action="#" th:action="@{/employees/editEmployee}" th:object="${employee}" method="post">
+    ID: <span th:text="*{idNumber}"></span><br/>
+    <input type="hidden" th:value="${employee.idNumber}" name="idNumber"/>
+    Last Name: <input type="text" th:field="*{lastName}" required="required"/><br/>
+    First name: <input type="text" th:field="*{firstName}" required="required"/><br/>
+    E-mail: <input type="email" th:field="*{email}" required="required"/><br/>
+    Primary Phone: <input type="tel" minlength="10" maxlength="10" th:field="*{primaryPhone}" required="required"/><br/>
+    Secondary Phone: <input type="tel" minlength="10" maxlength="10" th:field="*{secondaryPhone}"/><br/>
+    Street: <input type="text" th:field="*{street}" required="required"/><br/>
+    City: <input type="text" th:field="*{city}" required="required"/><br/>
+    State: <input type="text" minlength="2" maxlength="2" th:field="*{state}" required="required"/><br/>
+    ZipCode: <input type="text" minlength="10" maxlength="10" th:field="*{zipCode}" required="required"/><br/>
+    Notes: <textarea th:field="*{notes}"></textarea><br/>
+    <input type="submit" value="Update"/><input type="reset" value="Reset"/>
+  </form>
 </div>
 </body>
 </html>
