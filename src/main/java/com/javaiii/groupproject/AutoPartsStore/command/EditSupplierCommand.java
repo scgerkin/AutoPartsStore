@@ -19,21 +19,18 @@ public class EditSupplierCommand {
     public EditSupplierCommand() {
     }
 
-    public EditSupplierCommand(Integer businessId, String companyName, String contactPerson,
-                               String primaryPhone, String secondaryPhone, String website,
-                               String street, String city, String state, String zipCode,
-                               String notes) {
-        this.businessId = businessId;
-        this.companyName = companyName;
-        this.contactPerson = contactPerson;
-        this.primaryPhone = primaryPhone;
-        this.secondaryPhone = secondaryPhone;
-        this.website = website;
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.zipCode = zipCode;
-        this.notes = notes;
+    public EditSupplierCommand(Supplier supplier) {
+        this.businessId = supplier.getBusinessID();
+        this.companyName = supplier.getCompanyName();
+        this.contactPerson = supplier.getContactName();
+        this.primaryPhone = supplier.getPrimaryPhone();
+        this.secondaryPhone = supplier.getSecondaryPhone();
+        this.website = supplier.getWebsite();
+        this.street = supplier.getAddress().getStreet();
+        this.city = supplier.getAddress().getCity();
+        this.state = String.valueOf(supplier.getAddress().getState());
+        this.zipCode = String.valueOf(supplier.getAddress().getZipCode());
+        this.notes = supplier.getNotes();
     }
 
     public Supplier unpackNew() {
