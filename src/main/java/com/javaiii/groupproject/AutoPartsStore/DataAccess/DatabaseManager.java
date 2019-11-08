@@ -508,6 +508,17 @@ public class DatabaseManager {
         }
     }
 
+    public List<Supplier> getAllSuppliers() throws SQLException {
+        String sql = "SELECT SupplierID FROM AutoPartsStore.Suppliers;";
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+        List<Supplier> suppliers = new ArrayList<>();
+        while (rs.next()) {
+            suppliers.add(retrieveSupplierByID(rs.getInt(1)));
+        }
+        return suppliers;
+    }
+
     // has test coverage
     public Car retrieveCarConfigByID(Integer id) throws SQLException {
         String sql = "SELECT CarMakeID, CarModelID, ProductionYear FROM AutoPartsStore.CarConfigurations WHERE CarID = ?;";
