@@ -49,7 +49,7 @@ public class SupplierController {
      * that will be given to the redirect action and tells Spring to redirect
      * to the editSupplier page.
      */
-    @PostMapping(value="/suppliers/SupplierList")
+    @PostMapping(value="/suppliers/supplierList")
     public String postSupplierList(@ModelAttribute("supplierIdCommand") IdCommand id,
                                    BindingResult bindingResult,
                                    Model model,
@@ -89,7 +89,7 @@ public class SupplierController {
             System.err.println("Binding result has errors");
         }
         redirectAttributes.addFlashAttribute("supplier", cmd);
-        return "employees/editEmployee";
+        return "suppliers/editSupplier";
     }
 
     /**
