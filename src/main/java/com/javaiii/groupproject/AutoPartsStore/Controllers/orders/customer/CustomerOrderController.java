@@ -341,7 +341,6 @@ public class CustomerOrderController {
             List<Part> temp = new ArrayList<>(activeParts);
 
             // remove parts that have no stock on hand
-            // todo test this, not sure if it works as intended
             for (Part part : temp) {
                 if (part.getQuantityOnHand().compareTo(0) <= 0) {
                     activeParts.remove(part);
