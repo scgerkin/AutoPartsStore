@@ -40,6 +40,10 @@ public class EmployeeController {
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            System.err.println("Binding result has errors");
+        }
+
         Employee editEmployee = null;
         try {
             editEmployee = db.getEmployeeByID(id.getId());
@@ -109,6 +113,9 @@ public class EmployeeController {
                                   BindingResult bindingResult,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            System.err.println("Binding result has errors");
+        }
 
         try {
             Employee employee = cmd.unpackNew();
