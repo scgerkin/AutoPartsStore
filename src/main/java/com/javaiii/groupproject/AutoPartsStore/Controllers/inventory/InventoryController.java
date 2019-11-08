@@ -48,6 +48,21 @@ public class InventoryController {
         return "inventory/inventoryList";
     }
 
+    @PostMapping(value="/inventory/inventoryList")
+    public String togglePartStatus(@ModelAttribute("partIdCommand") IdCommand id, Model model) {
+        try {
+            connect();
+            togglePartStatus(id.getId());
+        }
+        catch (SQLException ex) {
+            System.err.println("Error when toggling status");
+            ex.printStackTrace();
+            return "errors/databaseError";
+        }
+
+        return "inventory/inventoryList";
+    }
+
     @RequestMapping(value="/inventory/addPart")
     public String initAddPartDisplay(Model model) {
         model.addAttribute("createPartCommand", new CreatePartCommand());
@@ -60,6 +75,7 @@ public class InventoryController {
                               Model model,
                               RedirectAttributes redirectAttributes) {
         try {
+            connect();
             Supplier supplier = db.retrieveSupplierByID(1);
             Car car = db.retrieveCarConfigByID(1);
             Part part = Part.createNew(supplier, car, cmd.name, cmd.description, cmd.category,
@@ -100,7 +116,14 @@ public class InventoryController {
     }
 
 
-
+    private void togglePartStatus(Integer partID) throws SQLException {
+        for (Part part : inventory) {
+            if (part.getPartID().equals(partID)) {
+                part.setDiscontinued(!part.isDiscontinued());
+                db.saveToDatabase(part);
+            }
+        }
+    }
 
 
 
