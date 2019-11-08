@@ -50,7 +50,7 @@ public class ResupplyOrderController {
 
     /**Initializes a connection to the database*/
     private void connect() {
-        db = new DatabaseManager(true);
+        db = new DatabaseManager(false);
     }
 
     /**Reset all member variables when we come to a Resupply*/

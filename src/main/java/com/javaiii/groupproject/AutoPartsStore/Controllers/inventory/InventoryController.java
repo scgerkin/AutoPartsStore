@@ -32,7 +32,7 @@ public class InventoryController {
     }
 
     private void connect() {
-        db = new DatabaseManager(true);
+        db = new DatabaseManager(false);
     }
 
     private void init() {

@@ -179,7 +179,7 @@ public class SupplierController {
 
     /**Initializes a new connection to the database*/
     private void connect() {
-        db = new DatabaseManager(true);
+        db = new DatabaseManager(false);
     }
 
     /**Initializes the objects the controller is to work with*/

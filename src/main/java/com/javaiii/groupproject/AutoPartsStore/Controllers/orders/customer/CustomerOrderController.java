@@ -81,7 +81,7 @@ public class CustomerOrderController {
 
     /**Creates a new DatabaseManager object to set the connection*/
     private void connect() {
-        db = new DatabaseManager(true);
+        db = new DatabaseManager(false);
     }
 
     /**Initializes the list and map items we will use for an order*/
