@@ -24,12 +24,11 @@ public class EmployeeController {
     private List<Employee> employeeList;
 
     public EmployeeController() {
-        init();
     }
 
     @RequestMapping(value="/employees/employeeList")
     public String initEmployeeListDisplay(Model model) {
-        init();
+        buildEmployeeList();
         model.addAttribute("employeeIdCommand", new IdCommand());
         return "employees/employeeList";
     }
@@ -138,11 +137,6 @@ public class EmployeeController {
 
     public static void setDb(DatabaseManager databaseManager) {
         db = databaseManager;
-    }
-
-    private void init() {
-
-        buildEmployeeList();
     }
 
     private void buildEmployeeList() {
