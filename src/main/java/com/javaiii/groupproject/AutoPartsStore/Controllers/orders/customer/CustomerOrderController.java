@@ -75,7 +75,7 @@ public class CustomerOrderController {
      * I'm not messing with it for right now, though.
      */
     public CustomerOrderController() {
-        init();
+        initListsAndMaps();
     }
 
     public static void setDb(DatabaseManager databaseManager) {
@@ -83,7 +83,7 @@ public class CustomerOrderController {
     }
 
     /**Initializes the list and map items we will use for an order*/
-    private void init() {
+    private void initListsAndMaps() {
         activeParts = new ArrayList<>();
         partOrderMap = new HashMap<>();
         orderedItems = new HashMap<>();
@@ -96,7 +96,7 @@ public class CustomerOrderController {
      */
     @RequestMapping("/orders/customer/startCustomerOrder")
     public String startCustomerOrder(Model model) {
-        init();
+        initListsAndMaps();
         model.addAttribute("customerCommand", new IdCommand());
         return "orders/customer/startCustomerOrder";
     }

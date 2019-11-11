@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class AutoPartsStoreApplication {
 
 	public static void main(String[] args) {
-		DatabaseManager db = new DatabaseManager(false);
+		DatabaseManager db = new DatabaseManager(true);
 		SupplierController.setDb(db);
 		EmployeeController.setDb(db);
 		ResupplyOrderController.setDb(db);

@@ -32,8 +32,6 @@ public class ResupplyOrderController {
     private Map<Part, Integer> partOrderMap;
     private Map<Part, Integer> orderedItems;
 
-    private String orderNotes;
-
     private final BigDecimal SALES_TAX_RATE = new BigDecimal(0.07);
     private final BigDecimal FLAT_SHIPPING_FEE = new BigDecimal(10.00);
 
@@ -43,7 +41,7 @@ public class ResupplyOrderController {
      * to use for orders.
      */
     public ResupplyOrderController() {
-        init();
+        initializeNotesAndMaps();
     }
 
     public static void setDb(DatabaseManager databaseManager) {
@@ -51,17 +49,16 @@ public class ResupplyOrderController {
     }
 
     /**Reset all member variables when we come to a Resupply*/
-    private void init() {
+    private void initializeNotesAndMaps() {
         activeParts = new ArrayList<>();
         partOrderMap = new HashMap<>();
         orderedItems = new HashMap<>();
-        orderNotes = "";
     }
 
     /**For setting the Command object we will use for resupply orders*/
     @RequestMapping("/orders/resupply/startResupplyOrder")
     public String startResupplyOrder(Model model) {
-        init();
+        initializeNotesAndMaps();
         model.addAttribute("employeeCommand", new IdCommand());
         return "orders/resupply/startResupplyOrder";
     }
@@ -198,11 +195,6 @@ public class ResupplyOrderController {
         return "orders/resupply/selectParts";
     }
 
-    @ModelAttribute("getOrderNotes")
-    public String getOrderNotes() {//fixme deprecate
-        return orderNotes;
-    }
-
     @ModelAttribute("partOrderMap")
     public Map<Part, Integer> getPartOrderMap() {
         return partOrderMap;
@@ -315,10 +307,6 @@ public class ResupplyOrderController {
 
     public void setPartOrderMap(Map<Part, Integer> partOrderMap) {
         this.partOrderMap = partOrderMap;
-    }
-
-    public void setOrderNotes(String orderNotes) {
-        this.orderNotes = orderNotes;
     }
 
     public BigDecimal getSALES_TAX_RATE() {

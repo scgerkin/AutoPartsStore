@@ -23,7 +23,6 @@ public class SupplierController {
     private List<Supplier> supplierList;
 
     public SupplierController() {
-        init();
     }
 
     /**
@@ -34,7 +33,7 @@ public class SupplierController {
      */
     @RequestMapping(value="/suppliers/supplierList")
     public String initSupplierListDisplay(Model model) {
-        init();
+        buildSupplierList();
         model.addAttribute("supplierIdCommand", new IdCommand());
         return "suppliers/supplierList";
     }
@@ -178,11 +177,6 @@ public class SupplierController {
 
     public static void setDb(DatabaseManager databaseManager) {
         db = databaseManager;
-    }
-
-    /**Initializes the objects the controller is to work with*/
-    private void init() {
-        buildSupplierList();
     }
 
     /**Builds the list of suppliers from the database*/
