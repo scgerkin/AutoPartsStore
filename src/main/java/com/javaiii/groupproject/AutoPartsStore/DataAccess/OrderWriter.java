@@ -216,9 +216,11 @@ public class OrderWriter {
         String orderIDColumnName = null;
         if (order instanceof CustomerOrder) {
             orderIDColumnName = "CustomerOrderID";
+            updatePartQuantity(part.getPartID(), quantity, "-");
         }
         else {
             orderIDColumnName = "ResupplyOrderID";
+            updatePartQuantity(part.getPartID(), quantity, "+");
         }
 
         String sql = "INSERT INTO AutoPartsStore.OrderDetails" +
@@ -232,6 +234,17 @@ public class OrderWriter {
         pStmt.setBigDecimal(i++, part.getPricePerUnit());
         pStmt.executeUpdate();
     }
+
+    private void updatePartQuantity(Integer partId, Integer quantity, String method) throws SQLException {
+        String sql = "UPDATE AutoPartsStore.Parts" +
+                         " SET QuantityOnHand = QuantityOnHand " + method + " ?" +
+                         " WHERE PartID = ?;";
+        PreparedStatement pStmt = connection.prepareStatement(sql);
+        pStmt.setInt(1, quantity);
+        pStmt.setInt(2, partId);
+        pStmt.executeUpdate();
+    }
+
 
     /**
      * Inserts a new ResupplyOrder into the database and sets the order ID Number.

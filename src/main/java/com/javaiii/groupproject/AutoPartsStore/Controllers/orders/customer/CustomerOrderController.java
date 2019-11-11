@@ -75,6 +75,7 @@ public class CustomerOrderController {
      * I'm not messing with it for right now, though.
      */
     public CustomerOrderController() {
+        initListsAndMaps();
     }
 
     public static void setDb(DatabaseManager databaseManager) {
