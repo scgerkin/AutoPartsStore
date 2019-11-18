@@ -1,4 +1,4 @@
-package com.javaiii.groupproject.AutoPartsStore.services;
+package com.javaiii.groupproject.AutoPartsStore.services.business;
 
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 

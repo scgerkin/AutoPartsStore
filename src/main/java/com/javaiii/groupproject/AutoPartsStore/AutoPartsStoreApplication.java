@@ -6,12 +6,9 @@ import com.javaiii.groupproject.AutoPartsStore.Controllers.orders.customer.Custo
 import com.javaiii.groupproject.AutoPartsStore.Controllers.orders.resupply.ResupplyOrderController;
 import com.javaiii.groupproject.AutoPartsStore.Controllers.supplier.SupplierController;
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
-import com.javaiii.groupproject.AutoPartsStore.Models.orders.ResupplyOrder;
-import com.javaiii.groupproject.AutoPartsStore.services.SupplierServiceImpl;
+import com.javaiii.groupproject.AutoPartsStore.services.business.SupplierServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 @SpringBootApplication
 public class AutoPartsStoreApplication {
