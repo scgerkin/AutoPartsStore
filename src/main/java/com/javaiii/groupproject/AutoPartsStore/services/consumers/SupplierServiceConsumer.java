@@ -1,9 +1,15 @@
 package com.javaiii.groupproject.AutoPartsStore.services.consumers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 import com.javaiii.groupproject.AutoPartsStore.services.consumers.commands.*;
 import com.sun.jndi.toolkit.url.Uri;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,35 +49,31 @@ public class SupplierServiceConsumer {
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
         System.out.println("POST SUBMIT");
-        String resource = null;
-        try {
-            resource = unpackCommand(cmd);
-            System.out.println(resource);
-        }
-        catch (UnsupportedEncodingException ex) {
-            System.out.println("ENCODING PROBLEM");
-        }
-        String uri = endpoint + resource;
         RestTemplate restTemplate = new RestTemplate();
-        Integer supplierId = restTemplate.getForObject(uri, Integer.class);
-        System.out.println("POST SUCCESS Supplier ID: " + supplierId);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        Supplier supplier = unpackCommand(cmd);
+        HttpEntity<String> request = new HttpEntity<>(convertToJson(supplier), httpHeaders);
+        Integer supplierId = restTemplate.postForObject(endpoint, request, Integer.class);
+        System.out.println(supplierId);
         return "services/supplierServicePortal";
     }
 
-    private String unpackCommand(SupplierCommand cmd) throws UnsupportedEncodingException {
-        String result = URLEncoder.encode(cmd.getCompanyName(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getContactPerson(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getPrimaryPhone(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getSecondaryPhone(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getWebsite(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getStreet(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getCity(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getState(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getZipCode(),"UTF-8") + "/" +
-                            URLEncoder.encode(cmd.getNotes(),"UTF-8");
-        return result;
+    private Supplier unpackCommand(SupplierCommand command) {
+        Address address = new Address(command.getStreet(), command.getCity(), command.getState(), command.getZipCode());
+        Supplier supplier = Supplier.createNew(command.getCompanyName(), command.getContactPerson(), command.getPrimaryPhone(), command.getSecondaryPhone(), command.getWebsite(), address, command.getNotes());
+        return supplier;
     }
 
-
+    private String convertToJson(Supplier supplier) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(supplier);
+        }
+        catch (JsonProcessingException ex) {
+            System.out.println("COULD NOT PARSE TO JSON");
+        }
+        return "";
+    }
 
 }

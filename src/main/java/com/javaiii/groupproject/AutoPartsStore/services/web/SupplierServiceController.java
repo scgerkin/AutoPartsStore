@@ -1,5 +1,7 @@
 package com.javaiii.groupproject.AutoPartsStore.services.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 import com.javaiii.groupproject.AutoPartsStore.services.business.SupplierService;
@@ -32,34 +34,10 @@ public class SupplierServiceController {
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-    @RequestMapping(value = "add-new-supplier/{supplier}")
-    public ResponseEntity<Integer> addNewSupplier(@PathVariable Supplier supplier) {
+    @PostMapping(value = "add-new-supplier/", consumes = "application/json")
+    public ResponseEntity<Integer> addNewSupplier(@RequestBody Supplier supplier) {
         System.out.println("ADD NEW SUPPLIER");
         Integer supplierId = supplierService.addNewSupplier(supplier);
         return new ResponseEntity<>(supplierId, HttpStatus.ACCEPTED);
-    }
-
-    @GetMapping(value = "add-new-supplier/{companyName}/{contactPerson}/{primaryPhone}/{secondaryPhone}" +
-                            "/{website}/{street}/{city}/{state}/{zipCode}/{notes}")
-    public ResponseEntity<Integer> addNewSupplier(@PathVariable String companyName,
-                                                  @PathVariable String contactPerson,
-                                                  @PathVariable String primaryPhone,
-                                                  @PathVariable String secondaryPhone,
-                                                  @PathVariable String website,
-                                                  @PathVariable String street,
-                                                  @PathVariable String city,
-                                                  @PathVariable String state,
-                                                  @PathVariable String zipCode,
-                                                  @PathVariable String notes) {
-        System.out.println("RECEIVED NEW SUPPLIER");
-        try {
-            Address address = new Address(street, city, state, zipCode);
-            Supplier supplier = Supplier.createNew(companyName, contactPerson, primaryPhone, secondaryPhone, website, address, notes);
-            Integer supplierId = supplierService.addNewSupplier(supplier);
-            return new ResponseEntity<>(supplierId, HttpStatus.ACCEPTED);
-        }
-        catch (Exception ex) {
-            throw new BadSupplierInformationException();
-        }
     }
 }
