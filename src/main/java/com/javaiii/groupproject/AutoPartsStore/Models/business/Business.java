@@ -236,4 +236,18 @@ public abstract class Business implements DatabaseWriteable {
                    getAddress().equals(business.getAddress()) &&
                    Objects.equals(getNotes(), business.getNotes());
     }
+
+    @Override
+    public String toString() {
+        return "Business{" +
+                   "businessID=" + businessID +
+                   ", companyName='" + companyName + '\'' +
+                   ", contactName='" + contactName + '\'' +
+                   ", primaryPhone='" + primaryPhone + '\'' +
+                   ", secondaryPhone='" + secondaryPhone + '\'' +
+                   ", website='" + website + '\'' +
+                   ", address=" + address +
+                   ", notes='" + notes + '\'' +
+                   '}';
+    }
 }
