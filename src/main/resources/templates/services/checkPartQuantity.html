@@ -13,7 +13,13 @@
     <a th:href="@{/services/supplierPortal}">Return to Supplier Portal</a><br/>
     <a th:href="@{/}">Return to main</a>
   </p>
-
+  <div th:object="${partCommand}">
+    <form action="#" th:action="@{/services/checkQuantity}" method="post">
+      Enter the supplier ID: <input type="number" th:field="*{supplierId}" step="1" min="0" required="required"/><br/>
+      Enter the part ID: <input type="number" th:field="*{partId}" step="1" min="0" required="required"/>
+      <input type="submit" value="Check Quantity"/><input type="reset" value="Reset"/>
+    </form>
+  </div>
 
 
 </div>
