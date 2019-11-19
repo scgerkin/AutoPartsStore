@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Successfully Added Supplier</title>
+  <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+  <script src="http://cdn.jsdelivr.net/webjars/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <h1>New supplier added to the database successfully.</h1>
+  <p th:object="${id}">
+    Your new supplier ID is: <span th:text="*{id}"></span><br/>
+    <a th:href="@{/services/supplierPortal}">Return to Supplier Portal</a><br/>
+    <a th:href="@{/}">Return to main</a>
+  </p>
+</div>
+</body>
+</html>
