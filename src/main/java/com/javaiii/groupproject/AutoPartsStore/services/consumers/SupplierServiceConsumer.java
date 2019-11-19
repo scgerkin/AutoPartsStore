@@ -2,15 +2,13 @@ package com.javaiii.groupproject.AutoPartsStore.services.consumers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
+import com.javaiii.groupproject.AutoPartsStore.command.IdCommand;
 import com.javaiii.groupproject.AutoPartsStore.services.consumers.commands.*;
-import com.sun.jndi.toolkit.url.Uri;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,12 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.util.UriBuilder;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 
 @Controller
 public class SupplierServiceConsumer {
@@ -48,16 +40,25 @@ public class SupplierServiceConsumer {
                                   BindingResult bindingResult,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
-        System.out.println("POST SUBMIT");
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         Supplier supplier = unpackCommand(cmd);
         HttpEntity<String> request = new HttpEntity<>(convertToJson(supplier), httpHeaders);
         Integer supplierId = restTemplate.postForObject(endpoint, request, Integer.class);
-        System.out.println(supplierId);
-        return "services/supplierServicePortal";
+        redirectAttributes.addFlashAttribute("id", new IdCommand(supplierId));
+        return "redirect:/services/addSupplierSuccess";
     }
+
+    @RequestMapping(value="/services/addSupplierSuccess")
+    public String initSuccessDisplay(@ModelAttribute("id") IdCommand id,
+                                     BindingResult bindingResult,
+                                     Model model,
+                                     RedirectAttributes redirectAttributes) {
+        model.addAttribute("id", id);
+        return "services/addSupplierSuccess";
+    }
+
 
     private Supplier unpackCommand(SupplierCommand command) {
         Address address = new Address(command.getStreet(), command.getCity(),

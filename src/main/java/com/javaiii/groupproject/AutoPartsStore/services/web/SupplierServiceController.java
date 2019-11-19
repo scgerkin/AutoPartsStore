@@ -1,11 +1,7 @@
 package com.javaiii.groupproject.AutoPartsStore.services.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 import com.javaiii.groupproject.AutoPartsStore.services.business.SupplierService;
-import com.javaiii.groupproject.AutoPartsStore.services.exceptions.BadSupplierInformationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +32,7 @@ public class SupplierServiceController {
 
     @PostMapping(value = "add-new-supplier/", consumes = "application/json")
     public ResponseEntity<Integer> addNewSupplier(@RequestBody Supplier supplier) {
-        System.out.println("ADD NEW SUPPLIER");
-        System.out.println("supplier = " + supplier.toString());
         Integer supplierId = supplierService.addNewSupplier(supplier);
-        System.out.println("supplier = " + supplier.toString());
         return new ResponseEntity<>(supplierId, HttpStatus.ACCEPTED);
     }
 }
