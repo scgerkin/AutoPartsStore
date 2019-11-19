@@ -67,7 +67,7 @@ public class SupplierServiceController {
         if (supplier.getPrimaryPhone() == null || supplier.getPrimaryPhone().length() != 10) {
             return false;
         }
-        if (!(supplier.getSecondaryPhone() == null || supplier.getSecondaryPhone().length() == 10)) {
+        if (supplier.getSecondaryPhone() != null && supplier.getSecondaryPhone().length() != 10) {
             return false;
         }
         return supplier.getAddress() != null;
