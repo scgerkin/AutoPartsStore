@@ -2,6 +2,7 @@ package com.javaiii.groupproject.AutoPartsStore.services.web;
 
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 import com.javaiii.groupproject.AutoPartsStore.services.business.SupplierService;
+import com.javaiii.groupproject.AutoPartsStore.services.consumers.commands.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +17,19 @@ public class SupplierServiceController {
         this.supplierService = supplierService;
     }
 
-    @GetMapping(value = "quantity-on-hand/{supplierId}/{partId}")
-    public ResponseEntity<Integer> getQuantityOnHand(@PathVariable Integer supplierId,
-                                                     @PathVariable Integer partId) {
+    @PostMapping(value = "quantity-on-hand/", consumes = "application/json")
+    public ResponseEntity<Integer> getQuantityOnHand(@RequestBody PartQuantityCommand partQuantityCommand) {
+        Integer supplierId = partQuantityCommand.getSupplierId();
+        Integer partId = partQuantityCommand.getPartId();
         Integer quantityOnHand = supplierService.getQuantityOnHand(supplierId, partId);
         return new ResponseEntity<>(quantityOnHand, HttpStatus.OK);
     }
 
-    @GetMapping(value = "update-quantity/{partId}/{newQuantity}")
-    public ResponseEntity updateQuantityOnHand(@PathVariable Integer partId,
-                                               @PathVariable Integer newQuantity) {
-        supplierService.updateQuantityOnHand(partId, newQuantity);
+    @PostMapping(value = "update-quantity/", consumes = "application/json")
+    public ResponseEntity updateQuantityOnHand(@RequestBody PartQuantityCommand partQuantityCommand) {
+        Integer partId = partQuantityCommand.getPartId();
+        Integer quantity = partQuantityCommand.getQuantity();
+        supplierService.updateQuantityOnHand(partId, quantity);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 

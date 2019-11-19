@@ -6,23 +6,18 @@ import com.javaiii.groupproject.AutoPartsStore.Models.address.Address;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 import com.javaiii.groupproject.AutoPartsStore.command.IdCommand;
 import com.javaiii.groupproject.AutoPartsStore.services.consumers.commands.*;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class SupplierServiceConsumer {
 
-    private final String endpoint = "http://localhost:8080/add-new-supplier/";
+    private final String host = "http://localhost:8080";
 
     @RequestMapping(value = "services/supplierPortal")
     public String initSupplierPortalDisplay(Model model) {
@@ -40,6 +35,7 @@ public class SupplierServiceConsumer {
                                   BindingResult bindingResult,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
+        final String endpoint = host + "/add-new-supplier/";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -59,6 +55,73 @@ public class SupplierServiceConsumer {
         return "services/addSupplierSuccess";
     }
 
+    @GetMapping(value = "/services/checkQuantity")
+    public String initCheckQuantityDisplay(Model model) {
+        model.addAttribute("partCommand", new PartQuantityCommand());
+        return "/services/checkPartQuantity";
+    }
+
+    @PostMapping(value = "/services/checkQuantity")
+    public String postCheckQuantity(@ModelAttribute("partCommand") PartQuantityCommand partCommand,
+                                    BindingResult bindingResult,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes) {
+        final String endpoint = host + "/quantity-on-hand/";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(convertToJson(partCommand), httpHeaders);
+        ResponseEntity<Integer> result = restTemplate.exchange(endpoint, HttpMethod.POST, request, Integer.class);
+        HttpStatus status = result.getStatusCode();
+        if (status.is2xxSuccessful()) {
+            partCommand.setQuantity(result.getBody());
+        }
+        else if (status.is5xxServerError()) {
+            partCommand.setStatus("Issue with server");
+        }
+        else if (status.is4xxClientError()) {
+            partCommand.setStatus("Bad request");
+        }
+        else {
+            partCommand.setStatus("Unknown error");
+        }
+        redirectAttributes.addFlashAttribute("partCommand", partCommand);
+        return "/services/checkPartQuantity";
+    }
+
+    @GetMapping(value = "/services/updateQuantity")
+    public String initUpdateQuantityDisplay(Model model) {
+        model.addAttribute("partCommand", new PartQuantityCommand());
+        return "/services/updatePartQuantity";
+    }
+
+    @PostMapping(value = "/services/updateQuantity")
+    public String postUpdateQuantity(@ModelAttribute("partCommand") PartQuantityCommand partCommand,
+                                     BindingResult bindingResult,
+                                     Model model,
+                                     RedirectAttributes redirectAttributes) {
+        final String endpoint = host + "/update-quantity/";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(convertToJson(partCommand), httpHeaders);
+        ResponseEntity<Integer> result = restTemplate.exchange(endpoint, HttpMethod.POST, request, Integer.class);
+        HttpStatus status = result.getStatusCode();
+        if (status.is2xxSuccessful()) {
+            partCommand.setQuantity(result.getBody());
+        }
+        else if (status.is5xxServerError()) {
+            partCommand.setStatus("Issue with server");
+        }
+        else if (status.is4xxClientError()) {
+            partCommand.setStatus("Bad request");
+        }
+        else {
+            partCommand.setStatus("Unknown error");
+        }
+        redirectAttributes.addFlashAttribute("partCommand", partCommand);
+        return "/services/updatePartQuantity";
+    }
 
     private Supplier unpackCommand(SupplierCommand command) {
         Address address = new Address(command.getStreet(), command.getCity(),
@@ -73,6 +136,17 @@ public class SupplierServiceConsumer {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(supplier);
+        }
+        catch (JsonProcessingException ex) {
+            System.out.println("COULD NOT PARSE TO JSON");
+        }
+        return "";
+    }
+
+    private String convertToJson(PartQuantityCommand cmd) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(cmd);
         }
         catch (JsonProcessingException ex) {
             System.out.println("COULD NOT PARSE TO JSON");
