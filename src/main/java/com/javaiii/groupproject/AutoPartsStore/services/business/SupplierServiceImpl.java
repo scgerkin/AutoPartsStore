@@ -59,14 +59,11 @@ public class SupplierServiceImpl implements SupplierService {
         if (validSupplier(supplier)) {
             try {
                 db.saveToDatabase(supplier);
-                return supplier.getBusinessID();
             } catch (SQLException ex) {
                 throw new DatabaseException();
             }
         }
-        // should not get to this point, but we'll return an invalid ID number
-        // just in case
-        return -1;
+        return supplier.getBusinessID();
     }
 
     private Supplier getSupplier(Integer supplierId) throws SQLException {
@@ -96,8 +93,10 @@ public class SupplierServiceImpl implements SupplierService {
         if (supplier.getPrimaryPhone() == null || supplier.getPrimaryPhone().length() != 10) {
             return false;
         }
-        if (supplier.getSecondaryPhone() != null && supplier.getSecondaryPhone().length() != 10) {
-            return false;
+        if (!supplier.getSecondaryPhone().isEmpty()) {
+            if (supplier.getSecondaryPhone().length() != 10) {
+                return false;
+            }
         }
         return supplier.getAddress() != null;
     }

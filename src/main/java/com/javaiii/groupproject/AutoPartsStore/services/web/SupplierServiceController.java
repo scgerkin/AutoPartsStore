@@ -37,7 +37,9 @@ public class SupplierServiceController {
     @PostMapping(value = "add-new-supplier/", consumes = "application/json")
     public ResponseEntity<Integer> addNewSupplier(@RequestBody Supplier supplier) {
         System.out.println("ADD NEW SUPPLIER");
+        System.out.println("supplier = " + supplier.toString());
         Integer supplierId = supplierService.addNewSupplier(supplier);
+        System.out.println("supplier = " + supplier.toString());
         return new ResponseEntity<>(supplierId, HttpStatus.ACCEPTED);
     }
 }
