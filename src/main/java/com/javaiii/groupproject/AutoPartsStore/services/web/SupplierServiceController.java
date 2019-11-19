@@ -41,6 +41,12 @@ public class SupplierServiceController {
 
     @GetMapping(value = "add-new-supplier/{supplier}")
     public ResponseEntity<Integer> addNewSupplier(@PathVariable Supplier supplier) {
+        if (supplier.getBusinessID() == null) {
+            supplier.setBusinessID(-1);
+        }
+        if (!validSupplier(supplier)) {
+            return new ResponseEntity<>(-1, HttpStatus.NOT_ACCEPTABLE);
+        }
         //todo test non-null fields
         // consider returning a String with more information
         if (supplier.getBusinessID() != -1) {
@@ -48,5 +54,22 @@ public class SupplierServiceController {
         }
         Integer supplierId = supplierService.addNewSupplier(supplier);
         return new ResponseEntity<>(supplierId, HttpStatus.ACCEPTED);
+    }
+
+    // this mess of conditionals is necessary because of poor entity design decision
+    private boolean validSupplier(Supplier supplier) {
+        if (supplier.getBusinessID() != -1) {
+            return false;
+        }
+        if (supplier.getCompanyName() == null) {
+            return false;
+        }
+        if (supplier.getPrimaryPhone() == null || supplier.getPrimaryPhone().length() != 10) {
+            return false;
+        }
+        if (!(supplier.getSecondaryPhone() == null || supplier.getSecondaryPhone().length() == 10)) {
+            return false;
+        }
+        return supplier.getAddress() != null;
     }
 }
