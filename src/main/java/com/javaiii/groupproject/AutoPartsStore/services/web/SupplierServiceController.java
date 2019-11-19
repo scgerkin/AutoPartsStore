@@ -26,50 +26,15 @@ public class SupplierServiceController {
     }
 
     @GetMapping(value = "update-quantity/{partId}/{newQuantity}")
-    public ResponseEntity<Boolean> updateQuantityOnHand(@PathVariable Integer partId,
-                                                        @PathVariable Integer newQuantity) {
-        if (newQuantity < 0) {
-            return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
-        }
-        Boolean added = supplierService.updateQuantityOnHand(partId, newQuantity);
-        if (added) {
-            return new ResponseEntity<>(true, HttpStatus.ACCEPTED);
-        } else {
-            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity updateQuantityOnHand(@PathVariable Integer partId,
+                                               @PathVariable Integer newQuantity) {
+        supplierService.updateQuantityOnHand(partId, newQuantity);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
     @GetMapping(value = "add-new-supplier/{supplier}")
     public ResponseEntity<Integer> addNewSupplier(@PathVariable Supplier supplier) {
-        if (supplier.getBusinessID() == null) {
-            supplier.setBusinessID(-1);
-        }
-        if (!validSupplier(supplier)) {
-            return new ResponseEntity<>(-1, HttpStatus.NOT_ACCEPTABLE);
-        }
-        //todo test non-null fields
-        // consider returning a String with more information
-        if (supplier.getBusinessID() != -1) {
-            return new ResponseEntity<>(-1, HttpStatus.NOT_ACCEPTABLE);
-        }
         Integer supplierId = supplierService.addNewSupplier(supplier);
         return new ResponseEntity<>(supplierId, HttpStatus.ACCEPTED);
-    }
-
-    // this mess of conditionals is necessary because of poor entity design decision
-    private boolean validSupplier(Supplier supplier) {
-        if (supplier.getBusinessID() != -1) {
-            return false;
-        }
-        if (supplier.getCompanyName() == null) {
-            return false;
-        }
-        if (supplier.getPrimaryPhone() == null || supplier.getPrimaryPhone().length() != 10) {
-            return false;
-        }
-        if (supplier.getSecondaryPhone() != null && supplier.getSecondaryPhone().length() != 10) {
-            return false;
-        }
-        return supplier.getAddress() != null;
     }
 }

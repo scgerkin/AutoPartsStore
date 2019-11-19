@@ -3,6 +3,8 @@ package com.javaiii.groupproject.AutoPartsStore.services.business;
 import com.javaiii.groupproject.AutoPartsStore.DataAccess.DatabaseManager;
 import com.javaiii.groupproject.AutoPartsStore.Models.business.Supplier;
 import com.javaiii.groupproject.AutoPartsStore.Models.products.Part;
+import com.javaiii.groupproject.AutoPartsStore.exceptions.ItemNotFoundException;
+import com.javaiii.groupproject.AutoPartsStore.services.exceptions.*;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -23,54 +25,80 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Integer getQuantityOnHand(Integer supplierId, Integer partId) {
-        Supplier supplier = null;
-        Part part = null;
-
         try {
-            supplier = db.retrieveSupplierByID(supplierId);
-            part = db.retrievePartByID(partId);
+            Supplier supplier = getSupplier(supplierId);
+            Part part = getPart(partId);
+            if (supplier.getBusinessID().compareTo(part.getPartID()) != 0) {
+                throw new SupplierPartMismatchException();
+            }
+            return part.getQuantityOnHand();
+        } catch (SQLException ex) {
+            throw new DatabaseException();
         }
-        catch (SQLException ex) {
-            //fixme this should be handled more specifically
-            return -1;
-        }
-        return part.getQuantityOnHand();
     }
 
     @Override
-    public Boolean updateQuantityOnHand(Integer partId, Integer newQuantity) {
-        if (newQuantity > MAX_QUANTITY) {
-            //fixme throw an exception
-            return false;
+    public void updateQuantityOnHand(Integer partId, Integer newQuantity) {
+        if (newQuantity < 0 || newQuantity > MAX_QUANTITY) {
+            throw new InvalidQuantityException();
         }
-
-        Part part = null;
-
         try {
-            part = db.retrievePartByID(partId);
+            Part part = getPart(partId);
             part.setQuantityOnHand(newQuantity);
             db.saveToDatabase(part);
-            return true;
-        }
-        catch (SQLException ex) {
-            //fixme handle with more detail
-            return false;
+        } catch (SQLException ex) {
+            throw new DatabaseException();
         }
     }
 
     @Override
     public Integer addNewSupplier(Supplier supplier) {
-        if (supplier.getBusinessID() != -1) {
-            //fixme handle with exception and detail
-            return -1;
+        if (supplier.getBusinessID() == null) {
+            supplier.setBusinessID(-1);
         }
+        if (validSupplier(supplier)) {
+            try {
+                db.saveToDatabase(supplier);
+                return supplier.getBusinessID();
+            } catch (SQLException ex) {
+                throw new DatabaseException();
+            }
+        }
+        // should not get to this point, but we'll return an invalid ID number
+        // just in case
+        return -1;
+    }
+
+    private Supplier getSupplier(Integer supplierId) throws SQLException {
         try {
-            db.saveToDatabase(supplier);
-            return supplier.getBusinessID();
+            return db.retrieveSupplierByID(supplierId);
+        } catch (ItemNotFoundException ex) {
+            throw new InvalidSupplierIdException();
         }
-        catch (SQLException ex) {
-            //fixme handle with exception and detail
-            return -1;
+    }
+
+    private Part getPart(Integer partId) throws SQLException {
+        try {
+            return db.retrievePartByID(partId);
+        } catch (ItemNotFoundException ex) {
+            throw new InvalidPartIdException();
         }
+    }
+
+    // this mess of conditionals is necessary because of poor entity design decision
+    private boolean validSupplier(Supplier supplier) {
+        if (supplier.getBusinessID() != -1) {
+            return false;
+        }
+        if (supplier.getCompanyName() == null) {
+            return false;
+        }
+        if (supplier.getPrimaryPhone() == null || supplier.getPrimaryPhone().length() != 10) {
+            return false;
+        }
+        if (supplier.getSecondaryPhone() != null && supplier.getSecondaryPhone().length() != 10) {
+            return false;
+        }
+        return supplier.getAddress() != null;
     }
 }
