@@ -60,8 +60,11 @@ public class SupplierServiceConsumer {
     }
 
     private Supplier unpackCommand(SupplierCommand command) {
-        Address address = new Address(command.getStreet(), command.getCity(), command.getState(), command.getZipCode());
-        Supplier supplier = Supplier.createNew(command.getCompanyName(), command.getContactPerson(), command.getPrimaryPhone(), command.getSecondaryPhone(), command.getWebsite(), address, command.getNotes());
+        Address address = new Address(command.getStreet(), command.getCity(),
+            command.getState(), command.getZipCode());
+        Supplier supplier = Supplier.createNew(command.getCompanyName(),
+            command.getContactPerson(), command.getPrimaryPhone(), command.getSecondaryPhone(),
+            command.getWebsite(), address, command.getNotes());
         return supplier;
     }
 
