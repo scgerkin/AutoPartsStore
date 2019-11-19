@@ -28,7 +28,7 @@ public class SupplierServiceImpl implements SupplierService {
         try {
             Supplier supplier = getSupplier(supplierId);
             Part part = getPart(partId);
-            if (supplier.getBusinessID().compareTo(part.getPartID()) != 0) {
+            if (supplier.getBusinessID().compareTo(part.getSupplier().getBusinessID()) != 0) {
                 throw new SupplierPartMismatchException();
             }
             return part.getQuantityOnHand();
