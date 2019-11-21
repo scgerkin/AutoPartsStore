@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -57,7 +58,10 @@ public class SupplierServiceConsumer {
 
     @GetMapping(value = "/services/checkQuantity")
     public String initCheckQuantityDisplay(Model model) {
-        model.addAttribute("partCommand", new PartQuantityCommand());
+        PartQuantityCommand partQuantityCommand = new PartQuantityCommand();
+        partQuantityCommand.setQuantity(-2);
+        partQuantityCommand.setStatus("Awaiting input...");
+        model.addAttribute("partCommand", partQuantityCommand);
         return "/services/checkPartQuantity";
     }
 
@@ -71,19 +75,14 @@ public class SupplierServiceConsumer {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(convertToJson(partCommand), httpHeaders);
-        ResponseEntity<Integer> result = restTemplate.exchange(endpoint, HttpMethod.POST, request, Integer.class);
-        HttpStatus status = result.getStatusCode();
-        if (status.is2xxSuccessful()) {
+        try {
+            ResponseEntity<Integer> result = restTemplate.exchange(endpoint, HttpMethod.POST, request, Integer.class);
             partCommand.setQuantity(result.getBody());
+            partCommand.setStatus("Received");
         }
-        else if (status.is5xxServerError()) {
-            partCommand.setStatus("Issue with server");
-        }
-        else if (status.is4xxClientError()) {
+        catch (HttpClientErrorException ex) {
+            partCommand.setQuantity(-1);
             partCommand.setStatus("Bad request");
-        }
-        else {
-            partCommand.setStatus("Unknown error");
         }
         redirectAttributes.addFlashAttribute("partCommand", partCommand);
         return "/services/checkPartQuantity";

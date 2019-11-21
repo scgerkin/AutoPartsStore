@@ -18,10 +18,14 @@
       Enter the supplier ID: <input type="number" th:field="*{supplierId}" step="1" min="0" required="required"/><br/>
       Enter the part ID: <input type="number" th:field="*{partId}" step="1" min="0" required="required"/>
       <input type="submit" value="Check Quantity"/><input type="reset" value="Reset"/>
+      <div th:if="*{quantity >= 0}">
+        Quantity is <span th:text="*{quantity}"></span>
+      </div>
+      <div th:if="*{quantity == -1}">
+        Invalid request. Part could not be found.
+      </div>
     </form>
   </div>
-
-
 </div>
 </body>
 </html>
