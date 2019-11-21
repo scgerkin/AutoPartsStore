@@ -62,7 +62,7 @@ public class SupplierServiceConsumer {
         partQuantityCommand.setQuantity(-2);
         partQuantityCommand.setStatus("Awaiting input...");
         model.addAttribute("partCommand", partQuantityCommand);
-        return "/services/checkPartQuantity";
+        return "services/checkPartQuantity";
     }
 
     @PostMapping(value = "/services/checkQuantity")
@@ -85,7 +85,7 @@ public class SupplierServiceConsumer {
             partCommand.setStatus("Bad request");
         }
         redirectAttributes.addFlashAttribute("partCommand", partCommand);
-        return "/services/checkPartQuantity";
+        return "services/checkPartQuantity";
     }
 
     @GetMapping(value = "/services/updateQuantity")
@@ -93,7 +93,7 @@ public class SupplierServiceConsumer {
         PartQuantityCommand partQuantityCommand = new PartQuantityCommand();
         partQuantityCommand.setStatus("Awaiting input...");
         model.addAttribute("partCommand", partQuantityCommand);
-        return "/services/updatePartQuantity";
+        return "services/updatePartQuantity";
     }
 
     @PostMapping(value = "/services/updateQuantity")
@@ -114,7 +114,7 @@ public class SupplierServiceConsumer {
             partCommand.setStatus("Invalid request");
         }
         redirectAttributes.addFlashAttribute("partCommand", partCommand);
-        return "/services/updatePartQuantity";
+        return "services/updatePartQuantity";
     }
 
     private Supplier unpackCommand(SupplierCommand command) {
