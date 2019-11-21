@@ -90,7 +90,9 @@ public class SupplierServiceConsumer {
 
     @GetMapping(value = "/services/updateQuantity")
     public String initUpdateQuantityDisplay(Model model) {
-        model.addAttribute("partCommand", new PartQuantityCommand());
+        PartQuantityCommand partQuantityCommand = new PartQuantityCommand();
+        partQuantityCommand.setStatus("Awaiting input...");
+        model.addAttribute("partCommand", partQuantityCommand);
         return "/services/updatePartQuantity";
     }
 
@@ -104,19 +106,12 @@ public class SupplierServiceConsumer {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(convertToJson(partCommand), httpHeaders);
-        ResponseEntity<Integer> result = restTemplate.exchange(endpoint, HttpMethod.POST, request, Integer.class);
-        HttpStatus status = result.getStatusCode();
-        if (status.is2xxSuccessful()) {
-            partCommand.setQuantity(result.getBody());
+        try {
+            ResponseEntity<Integer> result = restTemplate.exchange(endpoint, HttpMethod.POST, request, Integer.class);
+            partCommand.setStatus("Part updated successfully!");
         }
-        else if (status.is5xxServerError()) {
-            partCommand.setStatus("Issue with server");
-        }
-        else if (status.is4xxClientError()) {
-            partCommand.setStatus("Bad request");
-        }
-        else {
-            partCommand.setStatus("Unknown error");
+        catch (HttpClientErrorException ex) {
+            partCommand.setStatus("Invalid request");
         }
         redirectAttributes.addFlashAttribute("partCommand", partCommand);
         return "/services/updatePartQuantity";
