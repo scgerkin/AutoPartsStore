@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class SupplierServiceConsumer {
 
-    private final String host = "http://localhost:8080";
+    private final String host = "https://jgp-aps.herokuapp.com/";
 
     @RequestMapping(value = "services/supplierPortal")
     public String initSupplierPortalDisplay(Model model) {
